@@ -35,7 +35,6 @@ async def web_server():
     return web_app
 
 import pyrogram.utils
-pyrogram.utils.MIN_CHANNEL_ID = -1009147483647
 
 
 def get_indian_time():
@@ -105,6 +104,8 @@ class Bot(Client):
             db_channel = await self.get_chat(CHANNEL_ID)
             self.db_channel = db_channel
         except Exception as e:
+            import traceback
+            traceback.print_exc()
             self.LOGGER(__name__).warning(e)
             self.LOGGER(__name__).warning(
                 f"Make Sure bot is Admin in DB Channel, and Double check the CHANNEL_ID Value, Current Value {CHANNEL_ID}"
