@@ -2,7 +2,7 @@ import asyncio
 from pyrogram.types import InlineKeyboardMarkup, InlineKeyboardButton 
 from datetime import datetime, timedelta
 
-#Time conversion for auto delete timer
+
 def convert_time(duration_seconds: int) -> str:
     periods = [
         ('Yᴇᴀʀ', 60 * 60 * 24 * 365),
@@ -28,15 +28,15 @@ def convert_time(duration_seconds: int) -> str:
         return ', '.join(parts[:-1]) +' ᴀɴᴅ '+ parts[-1]
 
 
-#=====================================================================================##
-#.........Auto Delete Functions.......#
-#=====================================================================================##
+
+
+
 DEL_MSG = """<b>⚠️ Dᴜᴇ ᴛᴏ Cᴏᴘʏʀɪɢʜᴛ ɪssᴜᴇs....
 <blockquote>Yᴏᴜʀ ғɪʟᴇs ᴡɪʟʟ ʙᴇ ᴅᴇʟᴇᴛᴇᴅ ᴡɪᴛʜɪɴ <a href="https://t.me/{username}">{time}</a>. Sᴏ ᴘʟᴇᴀsᴇ ғᴏʀᴡᴀʀᴅ ᴛʜᴇᴍ ᴛᴏ ᴀɴʏ ᴏᴛʜᴇʀ ᴘʟᴀᴄᴇ ғᴏʀ ғᴜᴛᴜʀᴇ ᴀᴠᴀɪʟᴀʙɪʟɪᴛʏ.</blockquote></b>"""
 
-#Function for provide auto delete notification message
+
 async def auto_del_notification(bot_username, msg, delay_time, transfer, is_batch=False, all_messages=None): 
-    # For batches, use the last message for notification
+    
     notification_msg = msg
     if is_batch and all_messages and isinstance(all_messages, list) and len(all_messages) > 0:
         notification_msg = all_messages[-1]
@@ -64,7 +64,7 @@ async def auto_del_notification(bot_username, msg, delay_time, transfer, is_batc
         print(f"Error occured while editing the Delete message: {e}")
         await temp.edit_text(f"<b><blockquote>Pʀᴇᴠɪᴏᴜs Mᴇssᴀɢᴇ ᴡᴀs Dᴇʟᴇᴛᴇᴅ </blockquote></b>")
 
-    # Delete all messages in batch if it's a batch
+    
     if is_batch and all_messages and isinstance(all_messages, list):
         for message in all_messages:
             try:
@@ -72,14 +72,14 @@ async def auto_del_notification(bot_username, msg, delay_time, transfer, is_batc
             except Exception as e:
                 print(f"Error occurred deleting message in batch: {e}")
     else:
-        # Delete single message
+        
         try:
             await msg.delete()
         except Exception as e:
             print(f"Error occurred on auto_del_notification() : {e}")
 
 
-#Function for deleteing files/Messages.....
+
 async def delete_message(msg, delay_time): 
     await asyncio.sleep(delay_time)
 

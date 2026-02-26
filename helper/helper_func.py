@@ -8,7 +8,8 @@ from pyrogram.errors import UserNotParticipant, Forbidden, PeerIdInvalid, ChatAd
 from datetime import datetime, timedelta
 from pyrogram import errors
 
-
+user_id = Message.from_user.id
+is_admin = user_id in client.admins  
 
 async def encode(string):
     string_bytes = string.encode("ascii")
