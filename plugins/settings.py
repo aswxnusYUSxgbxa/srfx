@@ -2,7 +2,7 @@ from pyrogram import Client, filters
 from pyrogram.types import InlineKeyboardMarkup, InlineKeyboardButton, Message
 from pyrogram.errors.pyromod import ListenerTimeout
 from config import OWNER_ID
-from helper_func import is_admin
+from helper.helper_func import is_admin
 import humanize
 
 
@@ -127,6 +127,153 @@ __ᴜsᴇ ᴛʜᴇ ᴀᴘᴘʀᴏᴘʀɪᴀᴛᴇ ʙᴜᴛᴛᴏɴ ʙᴇʟᴏᴡ
     )
     await query.message.edit_text(msg, reply_markup=reply_markup)
     return
+
+
+
+@Client.on_callback_query(filters.regex("^add_fsub$"))
+async def add_fsub(client, query):
+    if not query.from_user.id in client.admins:
+        return await query.answer('✗ ᴏɴʟʏ ᴀᴅᴍɪɴs ᴄᴀɴ ᴜsᴇ ᴛʜɪs!', show_alert=True)
+
+    await query.answer()
+    msg = f"""<blockquote>✦ ᴀᴅᴅ ɴᴇᴡ ꜰᴏʀᴄᴇ sᴜʙ ᴄʜᴀɴɴᴇʟ</blockquote>
+›› **ᴄᴜʀʀᴇɴᴛ ᴄʜᴀɴɴᴇʟs:** `{len(client.fsub_dict)}`
+
+__sᴇɴᴅ ᴛʜᴇ ᴄʜᴀɴɴᴇʟ ɪᴅ (ɴᴇɢᴀᴛɪᴠᴇ ɪɴᴛᴇɢᴇʀ ᴠᴀʟᴜᴇ) ᴏғ ᴛʜᴇ ᴄʜᴀɴɴᴇʟ ʏᴏᴜ ᴡᴀɴᴛ ᴛᴏ ᴀᴅᴅ ɪɴ ᴛʜᴇ ɴᴇxᴛ 60 sᴇᴄᴏɴᴅs!__
+
+**ᴇxᴀᴍᴘʟᴇ:** `-1001234567675`
+**ɴᴏᴛᴇ:** ᴍᴀᴋᴇ sᴜʀᴇ ᴛʜᴇ ʙᴏᴛ ɪs ᴀᴅᴍɪɴ ɪɴ ᴛʜᴇ ᴄʜᴀɴɴᴇʟ!"""
+
+    await query.message.edit_text(msg)
+    try:
+        res = await client.listen(user_id=query.from_user.id, filters=filters.text, timeout=60)
+        channel_id_text = res.text.strip()
+
+        if not channel_id_text.lstrip('-').isdigit():
+            return await query.message.edit_text("**✗ ɪɴᴠᴀʟɪᴅ ᴄʜᴀɴɴᴇʟ ɪᴅ! ᴘʟᴇᴀsᴇ sᴇɴᴅ ᴀ ᴠᴀʟɪᴅ ɴᴇɢᴀᴛɪᴠᴇ ɪɴᴛᴇɢᴇʀ.**",
+                                                reply_markup=InlineKeyboardMarkup([[InlineKeyboardButton('‹ ʙᴀᴄᴋ', 'fsub')]]))
+
+        channel_id = int(channel_id_text)
+
+        if channel_id in client.fsub_dict:
+            return await query.message.edit_text(f"**✗ ᴄʜᴀɴɴᴇʟ `{channel_id}` ɪs ᴀʟʀᴇᴀᴅʏ ᴀᴅᴅᴇᴅ!**",
+                                                reply_markup=InlineKeyboardMarkup([[InlineKeyboardButton('‹ ʙᴀᴄᴋ', 'fsub')]]))
+
+        try:
+            chat = await client.get_chat(channel_id)
+            link = chat.invite_link
+            if not link:
+                try:
+                    link_obj = await client.create_chat_invite_link(channel_id)
+                    link = link_obj.invite_link
+                except:
+                    link = None
+
+            # Ask for join request setting
+            await query.message.edit_text(f"""**✓ ᴄʜᴀɴɴᴇʟ ғᴏᴜɴᴅ:** `{chat.title}`
+
+**ᴅᴏ ʏᴏᴜ ᴡᴀɴᴛ ᴛᴏ ᴇɴᴀʙʟᴇ ᴊᴏɪɴ ʀᴇǫᴜᴇsᴛs ғᴏʀ ᴛʜɪs ᴄʜᴀɴɴᴇʟ?**
+(ɪғ ᴇɴᴀʙʟᴇᴅ, ᴜsᴇʀs ᴍᴜsᴛ sᴇɴᴅ ᴀ ᴊᴏɪɴ ʀᴇǫᴜᴇsᴛ ᴛᴏ ʙᴇ ᴀᴄᴄᴇᴘᴛᴇᴅ)
+
+__ʀᴇᴘʟʏ ᴡɪᴛʜ `yes` ᴏʀ `no` ɪɴ ᴛʜᴇ ɴᴇxᴛ 60 sᴇᴄᴏɴᴅs!__""")
+
+            req_res = await client.listen(user_id=query.from_user.id, filters=filters.text, timeout=60)
+            enable_request = req_res.text.lower() in ['yes', 'y', 'true', 'on']
+
+            # Ask for timer setting
+            await query.message.edit_text(f"""**✓ ᴊᴏɪɴ ʀᴇǫᴜᴇsᴛ:** {'ᴇɴᴀʙʟᴇᴅ' if enable_request else 'ᴅɪsᴀʙʟᴇᴅ'}
+
+**sᴇᴛ ᴀ ᴛɪᴍᴇʀ ғᴏʀ ᴛʜᴇ ɪɴᴠɪᴛᴇ ʟɪɴᴋ? (ɪɴ ᴍɪɴᴜᴛᴇs)**
+(0 ᴛᴏ ᴅɪsᴀʙʟᴇ ᴛɪᴍᴇʀ)
+
+__sᴇɴᴅ ᴀɴ ɪɴᴛᴇɢᴇʀ ᴠᴀʟᴜᴇ ɪɴ ᴛʜᴇ ɴᴇxᴛ 60 sᴇᴄᴏɴᴅs!__""")
+
+            timer_res = await client.listen(user_id=query.from_user.id, filters=filters.text, timeout=60)
+            timer = int(timer_res.text.strip()) if timer_res.text.strip().isdigit() else 0
+
+            # Add to dict
+            client.fsub_dict[channel_id] = [chat.title, link, enable_request, timer]
+            if enable_request and channel_id not in client.req_channels:
+                client.req_channels.append(channel_id)
+                await client.mongodb.set_channels(client.req_channels)
+
+            # Save to DB
+            data = await client.mongodb.get_fsub_channels()
+            data[str(channel_id)] = [chat.title, link, enable_request, timer]
+            await client.mongodb.set_fsub_channels(data)
+
+            await query.message.edit_text(f"""**✓ ꜰᴏʀᴄᴇ sᴜʙ ᴄʜᴀɴɴᴇʟ ᴀᴅᴅᴇᴅ sᴜᴄᴄᴇssғᴜʟʟʏ!**
+
+›› **ᴄʜᴀɴɴᴇʟ:** `{chat.title}`
+›› **ɪᴅ:** `{channel_id}`
+›› **ʀᴇǫᴜᴇsᴛ:** {'ᴇɴᴀʙʟᴇᴅ' if enable_request else 'ᴅɪsᴀʙʟᴇᴅ'}
+›› **ᴛɪᴍᴇʀ:** `{timer} mins`""",
+                                        reply_markup=InlineKeyboardMarkup([[InlineKeyboardButton('‹ ʙᴀᴄᴋ', 'fsub')]]))
+
+        except Exception as e:
+            await query.message.edit_text(f"""**✗ ᴇʀʀᴏʀ ᴀᴄᴄᴇssɪɴɢ ᴄʜᴀɴɴᴇʟ!**
+
+›› **ᴇʀʀᴏʀ:** `{str(e)}`""",
+                                        reply_markup=InlineKeyboardMarkup([[InlineKeyboardButton('‹ ʙᴀᴄᴋ', 'fsub')]]))
+
+    except Exception as e:
+        await query.message.edit_text(f"**✗ ᴛɪᴍᴇᴏᴜᴛ ᴏʀ ᴇʀʀᴏʀ:** `{str(e)}`",
+                                    reply_markup=InlineKeyboardMarkup([[InlineKeyboardButton('‹ ʙᴀᴄᴋ', 'fsub')]]))
+
+
+
+@Client.on_callback_query(filters.regex("^rm_fsub$"))
+async def rm_fsub(client, query):
+    if not query.from_user.id in client.admins:
+        return await query.answer('✗ ᴏɴʟʏ ᴀᴅᴍɪɴs ᴄᴀɴ ᴜsᴇ ᴛʜɪs!', show_alert=True)
+
+    await query.answer()
+
+    if not client.fsub_dict:
+        return await query.message.edit_text("**✗ ɴᴏ ꜰᴏʀᴄᴇ sᴜʙ ᴄʜᴀɴɴᴇʟs ᴛᴏ ʀᴇᴍᴏᴠᴇ!**",
+                                            reply_markup=InlineKeyboardMarkup([[InlineKeyboardButton('‹ ʙᴀᴄᴋ', 'fsub')]]))
+
+    msg = f"""<blockquote>✦ ʀᴇᴍᴏᴠᴇ ꜰᴏʀᴄᴇ sᴜʙ ᴄʜᴀɴɴᴇʟ</blockquote>
+**ᴀᴠᴀɪʟᴀʙʟᴇ ᴄʜᴀɴɴᴇʟs:**
+"""
+
+    for channel_id, data in client.fsub_dict.items():
+        msg += f"• `{data[0]}` (`{channel_id}`)\n"
+
+    msg += "\n__sᴇɴᴅ ᴛʜᴇ ᴄʜᴀɴɴᴇʟ ɪᴅ ʏᴏᴜ ᴡᴀɴᴛ ᴛᴏ ʀᴇᴍᴏᴠᴇ ɪɴ ᴛʜᴇ ɴᴇxᴛ 60 sᴇᴄᴏɴᴅs!__"
+
+    await query.message.edit_text(msg)
+    try:
+        res = await client.listen(user_id=query.from_user.id, filters=filters.text, timeout=60)
+        channel_id_text = res.text.strip()
+
+        if not channel_id_text.lstrip('-').isdigit():
+            return await query.message.edit_text("**✗ ɪɴᴠᴀʟɪᴅ ᴄʜᴀɴɴᴇʟ ɪᴅ!**",
+                                                reply_markup=InlineKeyboardMarkup([[InlineKeyboardButton('‹ ʙᴀᴄᴋ', 'fsub')]]))
+
+        channel_id = int(channel_id_text)
+
+        if channel_id not in client.fsub_dict:
+            return await query.message.edit_text(f"**✗ ᴄʜᴀɴɴᴇʟ `{channel_id}` ɪs ɴᴏᴛ ɪɴ ᴛʜᴇ ʟɪsᴛ!**",
+                                                reply_markup=InlineKeyboardMarkup([[InlineKeyboardButton('‹ ʙᴀᴄᴋ', 'fsub')]]))
+
+        channel_name = client.fsub_dict[channel_id][0]
+
+        # Remove from dict
+        del client.fsub_dict[channel_id]
+        if channel_id in client.req_channels:
+            client.req_channels.remove(channel_id)
+            await client.mongodb.set_channels(client.req_channels)
+
+        # Remove from DB
+        await client.mongodb.remove_fsub_channel(channel_id)
+
+        await query.message.edit_text(f"**✓ ᴄʜᴀɴɴᴇʟ `{channel_name}` ʀᴇᴍᴏᴠᴇᴅ sᴜᴄᴄᴇssғᴜʟʟʏ!**",
+                                    reply_markup=InlineKeyboardMarkup([[InlineKeyboardButton('‹ ʙᴀᴄᴋ', 'fsub')]]))
+
+    except Exception as e:
+        await query.message.edit_text(f"**✗ ᴛɪᴍᴇᴏᴜᴛ ᴏʀ ᴇʀʀᴏʀ:** `{str(e)}`",
+                                    reply_markup=InlineKeyboardMarkup([[InlineKeyboardButton('‹ ʙᴀᴄᴋ', 'fsub')]]))
 
 
 

@@ -1,6 +1,6 @@
 from pyrogram import Client, filters
 from pyrogram.types import CallbackQuery, Message, InlineKeyboardButton, InlineKeyboardMarkup
-from config import MSG_EFFECT
+from config import MSG_EFFECT, OWNER_ID
 
 from pyrogram import Client, filters
 from pyrogram.types import Message, InlineKeyboardMarkup, InlineKeyboardButton
@@ -308,7 +308,7 @@ async def about(client: Client, query: CallbackQuery):
     buttons = [[InlineKeyboardButton("Back", callback_data = "home"), InlineKeyboardButton("Close", callback_data = "close")]]
     await query.message.edit_text(
         text=client.messages.get('ABOUT', 'No Start Message').format(
-            owner_id=client.owner,
+            owner_id=OWNER_ID,
             bot_username=client.username,
             first=query.from_user.first_name,
             last=query.from_user.last_name,
