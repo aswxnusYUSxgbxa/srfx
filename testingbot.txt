@@ -1,0 +1,90 @@
+by
+@rohit_1888
+
+on Telegram 
+[25-Feb-26 10:32:31 - WARNING] - __main__ - Telegram says: [400 CHANNEL_INVALID] (caused by "channels.GetChannels") Pyrogram 2.3.45 thinks: The channel parameter is invalid
+[25-Feb-26 10:32:31 - WARNING] - __main__ - Make Sure bot is Admin in DB Channel, and Double check the CHANNEL_ID Value, Current Value -1002568581749
+[25-Feb-26 10:32:31 - INFO] - __main__ - 
+Bot Stopped. @rohit_1888 for support
+[25-Feb-26 10:36:36 - INFO] - __main__ - Bot Running..! Made by @rohit_1888
+[25-Feb-26 10:36:36 - INFO] - __main__ - Bot Username: @whapiybbot
+[25-Feb-26 10:36:36 - INFO] - __main__ - Bot is now running. Thanks to @rohit_1888
+[25-Feb-26 10:37:31 - INFO] - __main__ - Shutting down...
+[25-Feb-26 10:37:44 - INFO] - __main__ - Bot Running..! Made by @rohit_1888
+[25-Feb-26 10:37:44 - INFO] - __main__ - Bot Username: @whapiybbot
+[25-Feb-26 10:37:44 - INFO] - __main__ - Bot is now running. Thanks to @rohit_1888
+[25-Feb-26 10:38:01 - INFO] - root - Received /start command from user ID: 1137799257
+[25-Feb-26 10:47:08 - INFO] - __main__ - Shutting down...
+[25-Feb-26 15:16:43 - WARNING] - __main__ - Telegram says: [400 CHANNEL_INVALID] (caused by "channels.GetChannels") Pyrogram 2.3.50 thinks: The channel parameter is invalid
+[25-Feb-26 15:16:43 - WARNING] - __main__ - Make Sure bot is Admin in DB Channel, and Double check the CHANNEL_ID Value, Current Value -1002568581749
+[25-Feb-26 15:16:43 - INFO] - __main__ - 
+Bot Stopped. @rohit_1888 for support
+[25-Feb-26 15:20:02 - INFO] - __main__ - Bot Running..! Made by @rohit_1888
+[25-Feb-26 15:20:02 - INFO] - __main__ - Bot Username: @whapiybbot
+[25-Feb-26 15:20:03 - INFO] - __main__ - Bot is now running. Thanks to @rohit_1888
+[25-Feb-26 15:21:34 - INFO] - root - Received /start command from user ID: 1137799257
+[25-Feb-26 15:21:36 - INFO] - root - Received /start command from user ID: 1137799257
+[25-Feb-26 15:21:39 - INFO] - root - Received /start command from user ID: 1137799257
+[25-Feb-26 15:21:44 - INFO] - root - Received /start command from user ID: 1137799257
+[25-Feb-26 15:43:21 - INFO] - __main__ - Shutting down...
+[25-Feb-26 15:43:34 - INFO] - __main__ - Bot Running..! Made by @rohithinte thandha 
+[25-Feb-26 15:43:34 - INFO] - __main__ - Bot Username: @whapiybbot
+[25-Feb-26 15:43:34 - INFO] - __main__ - Bot is now running. Thanks to @rohithinte thandha 
+[25-Feb-26 15:43:52 - INFO] - root - Received /start command from user ID: 1137799257
+[25-Feb-26 15:43:59 - INFO] - root - Received /start command from user ID: 1137799257
+[25-Feb-26 15:48:45 - INFO] - __main__ - Shutting down...
+[25-Feb-26 15:49:54 - WARNING] - __main__ - Error loading static fsub channel -: Telegram says: [400 USERNAME_INVALID] (caused by "contacts.ResolveUsername") Pyrogram 2.3.50 thinks: The username is invalid
+[25-Feb-26 15:49:54 - INFO] - __main__ - Bot Running..! Made by @rohithinte thandha 
+[25-Feb-26 15:49:54 - INFO] - __main__ - Bot Username: @whapiybbot
+[25-Feb-26 15:49:54 - INFO] - __main__ - Bot is now running. Thanks to @rohithinte thandha 
+[25-Feb-26 15:50:11 - INFO] - root - Received /start command from user ID: 1137799257
+[25-Feb-26 15:52:04 - INFO] - __main__ - Shutting down...
+[25-Feb-26 15:52:16 - WARNING] - __main__ - Error loading static fsub channel -: Telegram says: [400 USERNAME_INVALID] (caused by "contacts.ResolveUsername") Pyrogram 2.3.50 thinks: The username is invalid
+[25-Feb-26 15:52:17 - INFO] - __main__ - Bot Running..! Made by @rohithinte thandha 
+[25-Feb-26 15:52:17 - INFO] - __main__ - Bot Username: @whapiybbot
+[25-Feb-26 15:52:17 - INFO] - __main__ - Bot is now running. Thanks to @rohithinte thandha 
+[25-Feb-26 15:52:40 - INFO] - root - Received /start command from user ID: 1137799257
+[25-Feb-26 15:53:05 - INFO] - root - Received /start command from user ID: 1137799257
+[25-Feb-26 15:55:21 - ERROR] - pyrogram.dispatcher - Telegram says: [400 MEDIA_EMPTY] (caused by "messages.SendMedia") Pyrogram 2.3.50 thinks: The media you tried to send is invalid
+Traceback (most recent call last):
+  File "/home/aswin/aswn/lib/python3.13/site-packages/pyrogram/dispatcher.py", line 363, in handler_worker
+    await handler.callback(self.client, *args)
+  File "/home/aswin/aswn/lib/python3.13/site-packages/pyrogram/handlers/message_handler.py", line 154, in resolve_future_or_callback
+    await self.original_callback(client, message, *args)
+  File "/home/aswin/aswn/lib/python3.13/site-packages/pyromod/listen/listen.py", line 93, in resolve_listener
+    await self.user_callback(client, message, *args)
+  File "/home/aswin/repo/sra-fs/plugins/start.py", line 750, in on_get_video
+    await get_video(client, message)
+  File "/home/aswin/repo/sra-fs/plugins/start.py", line 1786, in get_video
+    sent_msg = await send_random_video(
+               ^^^^^^^^^^^^^^^^^^^^^^^^
+    ...<6 lines>...
+    )
+    ^
+  File "/home/aswin/repo/sra-fs/plugins/start.py", line 824, in send_random_video
+    sent_msg = await client.send_video(
+               ^^^^^^^^^^^^^^^^^^^^^^^^
+    ...<6 lines>...
+    )
+    ^
+  File "/home/aswin/aswn/lib/python3.13/site-packages/pyrogram/methods/messages/send_video.py", line 313, in send_video
+    r = await self.invoke(rpc)
+        ^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/aswin/aswn/lib/python3.13/site-packages/pyrogram/methods/advanced/invoke.py", line 80, in invoke
+    r = await self.session.invoke(
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^
+    ...<4 lines>...
+    )
+    ^
+  File "/home/aswin/aswn/lib/python3.13/site-packages/pyrogram/session/session.py", line 420, in invoke
+    return await self.send(query, timeout=timeout)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/aswin/aswn/lib/python3.13/site-packages/pyrogram/session/session.py", line 377, in send
+    RPCError.raise_it(result, type(data))
+    ~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^
+  File "/home/aswin/aswn/lib/python3.13/site-packages/pyrogram/errors/rpc_error.py", line 93, in raise_it
+    raise getattr(
+    ...<5 lines>...
+      is_signed=is_signed)
+pyrogram.errors.exceptions.bad_request_400.MediaEmpty: Telegram says: [400 MEDIA_EMPTY] (caused by "messages.SendMedia") Pyrogram 2.3.50 thinks: The media you tried to send is invalid
+[25-Feb-26 16:12:26 - INFO] - __main__ - Shutting down...
