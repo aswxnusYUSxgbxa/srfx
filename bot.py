@@ -110,19 +110,7 @@ class Bot(Client):
             self.LOGGER(__name__).warning(
                 f"Make Sure bot is Admin in DB Channel, and Double check the CHANNEL_ID Value, Current Value {CHANNEL_ID}"
             )
-            self.LOGGER(__name__).info("\nBot Stopped. @rohithinte thandha  for support")
-
-            # --- DEBUGGING STEP ---
-            self.LOGGER(__name__).info("Attempting to list visible channels/chats...")
-            try:
-                async for dialog in self.get_dialogs():
-                    chat = dialog.chat
-                    self.LOGGER(__name__).info(f"Seen Chat: {chat.title} (ID: {chat.id}, Type: {chat.type})")
-            except Exception as inner_e:
-                self.LOGGER(__name__).error(f"Failed to list dialogs: {inner_e}")
-            # --- END DEBUGGING ---
-
-            sys.exit()
+            self.LOGGER(__name__).warning("\nBot Starting without DB Channel access. Please forward a message to the bot to check the correct Channel ID.")
 
         self.set_parse_mode(ParseMode.HTML)
         self.username = usr_bot_me.username
