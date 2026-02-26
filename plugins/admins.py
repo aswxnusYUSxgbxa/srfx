@@ -9,8 +9,6 @@ import shutil
 
 
 async def admins(client, query):
-    if not (query.from_user.id==OWNER_ID):
-        return await query.answer('This can only be used by owner.')
     msg = f"""<blockquote>**Admin Settings:**</blockquote>
 **Admin User IDs:** {", ".join(f"`{a}`" for a in client.admins)}
 
@@ -139,8 +137,6 @@ async def usage_cmd(client: Client, message: Message):
 @Client.on_callback_query(filters.regex("^add_admin$"))
 async def add_new_admins(client: Client, query: CallbackQuery):
     await query.answer()
-    if not query.from_user.id in client.admins:
-        return await client.send_message(query.from_user.id, client.reply_text)
     ids_msg = await client.ask(query.from_user.id, "Send user ids seperated by a space in the next 60 seconds!\nEg: `838278682 83622928 82789928`", filters=filters.text, timeout=60)
     ids = ids_msg.text.split()
     
@@ -159,8 +155,6 @@ async def add_new_admins(client: Client, query: CallbackQuery):
 @Client.on_callback_query(filters.regex("^rm_admin$"))
 async def remove_admins(client: Client, query: CallbackQuery):
     await query.answer()
-    if not query.from_user.id in client.admins:
-        return await client.send_message(query.from_user.id, client.reply_text)
     ids_msg = await client.ask(query.from_user.id, "Send user ids seperated by a space in the next 60 seconds!\nEg: `838278682 83622928 82789928`", filters=filters.text, timeout=60)
     ids = ids_msg.text.split()
     

@@ -279,9 +279,6 @@ async def rm_fsub(client, query):
 
 @Client.on_callback_query(filters.regex("^db_channels$"))
 async def db_channels(client, query):
-    if not query.from_user.id in client.admins:
-        return await query.answer('✗ ᴏɴʟʏ ᴀᴅᴍɪɴs ᴄᴀɴ ᴜsᴇ ᴛʜɪs!', show_alert=True)
-    
     
     db_channels = getattr(client, 'db_channels', {})
     if db_channels:
@@ -320,8 +317,6 @@ __ᴜsᴇ ᴛʜᴇ ᴀᴘᴘʀᴏᴘʀɪᴀᴛᴇ ʙᴜᴛᴛᴏɴ ʙᴇʟᴏᴡ
 
 @Client.on_callback_query(filters.regex("^add_db_channel$"))
 async def add_db_channel(client, query):
-    if not query.from_user.id in client.admins:
-        return await query.answer('✗ ᴏɴʟʏ ᴀᴅᴍɪɴs ᴄᴀɴ ᴜsᴇ ᴛʜɪs!', show_alert=True)
     
     await query.answer()
     msg = f"""<blockquote>✦ ᴀᴅᴅ ɴᴇᴡ ᴅᴀᴛᴀʙᴀsᴇ ᴄʜᴀɴɴᴇʟ</blockquote>
@@ -403,8 +398,6 @@ __sᴇɴᴅ ᴛʜᴇ ᴄʜᴀɴɴᴇʟ ɪᴅ (ɴᴇɢᴀᴛɪᴠᴇ ɪɴᴛᴇɢ
 
 @Client.on_callback_query(filters.regex("^rm_db_channel$"))
 async def rm_db_channel(client, query):
-    if not query.from_user.id in client.admins:
-        return await query.answer('❌ ᴏɴʟʏ ᴀᴅᴍɪɴs ᴄᴀɴ ᴜsᴇ ᴛʜɪs!', show_alert=True)
     
     await query.answer()
     db_channels = getattr(client, 'db_channels', {})
@@ -460,8 +453,6 @@ async def rm_db_channel(client, query):
 
 @Client.on_callback_query(filters.regex("^set_primary_db$"))
 async def set_primary_db(client, query):
-    if not query.from_user.id in client.admins:
-        return await query.answer('❌ ᴏɴʟʏ ᴀᴅᴍɪɴs ᴄᴀɴ ᴜsᴇ ᴛʜɪs!', show_alert=True)
     
     await query.answer()
     db_channels = getattr(client, 'db_channels', {})
@@ -518,8 +509,6 @@ async def set_primary_db(client, query):
 
 @Client.on_callback_query(filters.regex("^toggle_db_status$"))
 async def toggle_db_status(client, query):
-    if not query.from_user.id in client.admins:
-        return await query.answer('❌ ᴏɴʟʏ ᴀᴅᴍɪɴs ᴄᴀɴ ᴜsᴇ ᴛʜɪs!', show_alert=True)
     
     await query.answer()
     db_channels = getattr(client, 'db_channels', {})

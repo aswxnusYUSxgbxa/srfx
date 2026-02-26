@@ -11,9 +11,6 @@ from pyrogram.errors.pyromod import ListenerTimeout
 @Client.on_message(filters.command('db') & filters.private)
 async def db_channels_command(client: Client, message: Message):
     """Direct command to manage DB channels"""
-    if message.from_user.id not in client.admins:
-        return await message.reply(client.reply_text)
-    
     
     db_channels = getattr(client, 'db_channels', {})
     primary_db = getattr(client, 'primary_db_channel', client.db)
@@ -59,8 +56,6 @@ __ᴜsᴇ ᴛʜᴇ ʙᴜᴛᴛᴏɴs ʙᴇʟᴏᴡ ᴛᴏ ᴍᴀɴᴀɢᴇ ʏᴏ
 @Client.on_callback_query(filters.regex("^db_details$"))
 async def db_details(client, query):
     """Show detailed information about DB channels"""
-    if not query.from_user.id in client.admins:
-        return await query.answer('✗ ᴏɴʟʏ ᴀᴅᴍɪɴs ᴄᴀɴ ᴜsᴇ ᴛʜɪs!', show_alert=True)
     
     await query.answer()
     
@@ -111,8 +106,6 @@ async def db_details(client, query):
 @Client.on_callback_query(filters.regex("^back_to_db_management$"))
 async def back_to_db_management(client, query):
     """Go back to main DB channels management"""
-    if not query.from_user.id in client.admins:
-        return await query.answer('✗ ᴏɴʟʏ ᴀᴅᴍɪɴs ᴄᴀɴ ᴜsᴇ ᴛʜɪs!', show_alert=True)
     
     await query.answer()
     
@@ -159,9 +152,6 @@ __ᴜsᴇ ᴛʜᴇ ʙᴜᴛᴛᴏɴs ʙᴇʟᴏᴡ ᴛᴏ ᴍᴀɴᴀɢᴇ ʏᴏ
 @Client.on_message(filters.command(['adddb', 'add_db']) & filters.private)
 async def quick_add_db(client: Client, message: Message):
     """Quick command to add a DB channel"""
-    if message.from_user.id not in client.admins:
-        return await message.reply(client.reply_text)
-    
     
     args = message.text.split()
     if len(args) < 2:
@@ -231,9 +221,6 @@ async def quick_add_db(client: Client, message: Message):
 @Client.on_message(filters.command(['removedb', 'rm_db']) & filters.private)
 async def quick_remove_db(client: Client, message: Message):
     """Quick command to remove a DB channel"""
-    if message.from_user.id not in client.admins:
-        return await message.reply(client.reply_text)
-    
     
     args = message.text.split()
     if len(args) < 2:
