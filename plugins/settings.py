@@ -169,7 +169,7 @@ __sᴇɴᴅ ᴛʜᴇ ᴄʜᴀɴɴᴇʟ ɪᴅ (ɴᴇɢᴀᴛɪᴠᴇ ɪɴᴛᴇɢ
                 except:
                     link = None
             
-            # Ask for join request setting
+            
             await query.message.edit_text(f"""**✓ ᴄʜᴀɴɴᴇʟ ғᴏᴜɴᴅ:** `{chat.title}`
             
 **ᴅᴏ ʏᴏᴜ ᴡᴀɴᴛ ᴛᴏ ᴇɴᴀʙʟᴇ ᴊᴏɪɴ ʀᴇǫᴜᴇsᴛs ғᴏʀ ᴛʜɪs ᴄʜᴀɴɴᴇʟ?**
@@ -180,7 +180,7 @@ __ʀᴇᴘʟʏ ᴡɪᴛʜ `yes` ᴏʀ `no` ɪɴ ᴛʜᴇ ɴᴇxᴛ 60 sᴇᴄᴏ
             req_res = await client.listen(user_id=query.from_user.id, filters=filters.text, timeout=60)
             enable_request = req_res.text.lower() in ['yes', 'y', 'true', 'on']
             
-            # Ask for timer setting
+            
             await query.message.edit_text(f"""**✓ ᴊᴏɪɴ ʀᴇǫᴜᴇsᴛ:** {'ᴇɴᴀʙʟᴇᴅ' if enable_request else 'ᴅɪsᴀʙʟᴇᴅ'}
             
 **sᴇᴛ ᴀ ᴛɪᴍᴇʀ ғᴏʀ ᴛʜᴇ ɪɴᴠɪᴛᴇ ʟɪɴᴋ? (ɪɴ ᴍɪɴᴜᴛᴇs)**
@@ -191,13 +191,13 @@ __sᴇɴᴅ ᴀɴ ɪɴᴛᴇɢᴇʀ ᴠᴀʟᴜᴇ ɪɴ ᴛʜᴇ ɴᴇxᴛ 60 s�
             timer_res = await client.listen(user_id=query.from_user.id, filters=filters.text, timeout=60)
             timer = int(timer_res.text.strip()) if timer_res.text.strip().isdigit() else 0
             
-            # Add to dict
+            
             client.fsub_dict[channel_id] = [chat.title, link, enable_request, timer]
             if enable_request and channel_id not in client.req_channels:
                 client.req_channels.append(channel_id)
                 await client.mongodb.set_channels(client.req_channels)
             
-            # Save to DB
+            
             data = await client.mongodb.get_fsub_channels()
             data[str(channel_id)] = [chat.title, link, enable_request, timer]
             await client.mongodb.set_fsub_channels(data)
@@ -259,13 +259,13 @@ async def rm_fsub(client, query):
         
         channel_name = client.fsub_dict[channel_id][0]
         
-        # Remove from dict
+        
         del client.fsub_dict[channel_id]
         if channel_id in client.req_channels:
             client.req_channels.remove(channel_id)
             await client.mongodb.set_channels(client.req_channels)
             
-        # Remove from DB
+        
         await client.mongodb.remove_fsub_channel(channel_id)
         
         await query.message.edit_text(f"**✓ ᴄʜᴀɴɴᴇʟ `{channel_name}` ʀᴇᴍᴏᴠᴇᴅ sᴜᴄᴄᴇssғᴜʟʟʏ!**", 

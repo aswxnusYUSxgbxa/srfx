@@ -6,13 +6,13 @@ autodel_cmd_pic = "https://telegra.ph/file/a64533814021b40057ccd.jpg"
 
 SET_SHORTENER_CMD_TXT = "Shortener is {shortener_status}. Use button to configure the shortener."
 
-#start message
+
 START_MSG = """Hello {mention}
 
 I can Download terabox files and having Advanced features 😎 ."""
 
 
-#Force sub message 
+
 FORCE_MSG =  """Hello {mention}
 
 <b>You need to join in my Channel/Group to use me

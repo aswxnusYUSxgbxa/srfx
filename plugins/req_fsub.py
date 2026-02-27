@@ -3,7 +3,7 @@ from database.database import db
 from pyrogram.enums import ChatMemberStatus
 from pyrogram.types import ChatMemberUpdated
 
-# This handler captures membership updates (like when a user leaves, banned)
+
 @Bot.on_chat_member_updated()
 async def handle_Chatmembers(client, chat_member_updated: ChatMemberUpdated):    
     chat_id = chat_member_updated.chat.id
@@ -21,7 +21,7 @@ async def handle_Chatmembers(client, chat_member_updated: ChatMemberUpdated):
                 await db.del_reqSent_user(chat_id, user_id)
 
 
-# This handler will capture any join request to the channel/group where the bot is an admin
+
 @Bot.on_chat_join_request()
 async def handle_join_request(client, chat_join_request):
     chat_id = chat_join_request.chat.id  

@@ -18,7 +18,7 @@ from apscheduler.schedulers.asyncio import AsyncIOScheduler
 import logging
 from helper.db import MongoDB
 
-# Silence APScheduler logs completely
+
 logging.getLogger("apscheduler").setLevel(logging.CRITICAL)
 
 load_dotenv(".env")
@@ -50,7 +50,7 @@ aria2 = aria2p.API(
     )
 )
 
-# Scheduler (shared)
+
 scheduler = AsyncIOScheduler(timezone="Asia/Kolkata")
 scheduler.add_job(remove_expired_users, "interval", seconds=10)
 
@@ -68,18 +68,18 @@ class Bot(Client):
         self.LOGGER = LOGGER
         self.scheduler = AsyncIOScheduler()
         
-        # New Mongo instance for new features
+        
         self.mongodb = MongoDB(DB_URI, DB_NAME)
         
-        # Attributes for new features
+        
         self.fsub_dict = {}
         self.req_channels = []
-        self.db_channels = {}  # Initialize DB channels dictionary
-        self.primary_db_channel = CHANNEL_ID  # Set initial primary DB channel
+        self.db_channels = {}  
+        self.primary_db_channel = CHANNEL_ID  
         
-        # These are used by new plugins, need to be populated from config or defaults
-        self.messages = {} # Will be populated in start() or from config
-        self.auto_del = 0 # Will be populated
+        
+        self.messages = {} 
+        self.auto_del = 0 
         self.protect = False
         self.disable_btn = False
         self.reply_text = ""
@@ -91,7 +91,7 @@ class Bot(Client):
     async def start(self):
         await super().start()
         scheduler.start()
-        # Schedule daily reset of free usage at midnight IST
+        
         try:
             scheduler.add_job(db.reset_all_free_usage, 'cron', hour=0, minute=0)
         except Exception as e:
@@ -117,19 +117,19 @@ class Bot(Client):
         bot_name = usr_bot_me.first_name
         bot_id = usr_bot_me.id
         
-        # --- NEW LOGIC: Load Settings from MongoDB ---
-        # Load bot settings
+        
+        
         try:
             bot_settings = await self.mongodb.get_bot_settings()
-            # If settings not in DB, use config defaults (which should be added to config.py later)
-            # For now using some defaults or values from config if available
+            
+            
             self.disable_btn = bot_settings.get('disable_btn', getattr(sys.modules['config'], 'DISABLE_BTN', False))
             self.protect = bot_settings.get('protect', getattr(sys.modules['config'], 'PROTECT', False))
             self.auto_del = bot_settings.get('auto_del', getattr(sys.modules['config'], 'AUTO_DEL', 0))
         except Exception as e:
             self.LOGGER(__name__).warning(f"Error loading bot settings: {e}")
 
-        # Load messages
+        
         try:
             self.messages = await self.mongodb.get_messages_settings()
             if not self.messages:
@@ -138,7 +138,7 @@ class Bot(Client):
         except Exception as e:
             self.LOGGER(__name__).warning(f"Error loading messages: {e}")
 
-        # Load admins
+        
         try:
             db_admins = await self.mongodb.get_admins_list()
             self.admins = db_admins
@@ -148,18 +148,18 @@ class Bot(Client):
             self.LOGGER(__name__).warning(f"Error loading admins: {e}")
             self.admins = [OWNER_ID]
             
-        # Load fsub channels (static first then dynamic)
-        # Static loading (from config if FSUBS exists)
+        
+        
         if hasattr(sys.modules['config'], 'FSUBS'):
             for channel in sys.modules['config'].FSUBS:
                 try:
                     chat = await self.get_chat(channel[0])
                     name = chat.title
                     link = None
-                    if not channel[1]: # request_enabled is False
+                    if not channel[1]: 
                         link = chat.invite_link
-                    if not link and not channel[2]: # timer is 0
-                        # Try to create link if bot is admin
+                    if not link and not channel[2]: 
+                        
                         try:
                             chat_link = await self.create_chat_invite_link(channel[0], creates_join_request=channel[1])
                             link = chat_link.invite_link
@@ -175,67 +175,67 @@ class Bot(Client):
                 except Exception as e:
                      self.LOGGER(__name__).warning(f"Error loading static fsub channel {channel[0]}: {e}")
 
-        # Dynamic loading
+        
         try:
             db_fsub_channels = await self.mongodb.get_fsub_channels()
             for channel_id_str, channel_data in db_fsub_channels.items():
                 channel_id = int(channel_id_str)
-                # Skip if already loaded from static config
+                
                 if channel_id in self.fsub_dict:
                     continue
                 try:
                     chat = await self.get_chat(channel_id)
                     name = chat.title
-                    # Update name in case it changed
+                    
                     channel_data[0] = name
                     self.fsub_dict[channel_id] = channel_data
-                    if channel_data[2]:  # if request is True
+                    if channel_data[2]:  
                         self.req_channels.append(channel_id)
                 except Exception as e:
                     self.LOGGER(__name__).warning(f"Could not load dynamic fsub channel {channel_id}: {e}")
-                    # Remove invalid channel from database
+                    
                     await self.mongodb.remove_fsub_channel(channel_id)
         except Exception as e:
             self.LOGGER(__name__).warning(f"Error loading dynamic fsub channels: {e}")
             
         await self.mongodb.set_channels(self.req_channels)
 
-        # Load DB channels
+        
         try:
             db_channels_data = await self.mongodb.get_db_channels()
             self.db_channels = {}
-            # Don't overwrite self.db (which is Rohit instance), but new plugins use self.db as primary channel ID.
-            # Wait, existing plugins use `from database.database import db` directly.
-            # New plugins use `client.db` as PRIMARY CHANNEL ID (int).
-            # I must ensure `self.db` is not overwritten if it breaks existing logic, but `Client` doesn't have `db` attribute by default.
-            # Existing `bot.py` didn't have `self.db`. Existing plugins import `db` from module.
-            # So I can safely set `self.db` to channel ID for new plugins!
             
-            self.db = CHANNEL_ID # Default
+            
+            
+            
+            
+            
+            
+            self.db = CHANNEL_ID 
             self.primary_db_channel = CHANNEL_ID
             
             for channel_id_str, channel_data in db_channels_data.items():
                 channel_id = int(channel_id_str)
                 try:
-                    # Verify channel still exists and is accessible
+                    
                     chat = await self.get_chat(channel_id)
-                    # Update name in case it changed
+                    
                     channel_data['name'] = chat.title
                     self.db_channels[channel_id_str] = channel_data
                     
-                    # Set primary channel if marked as primary
+                    
                     if channel_data.get('is_primary', False):
                         self.primary_db_channel = channel_id
-                        self.db = channel_id  # Update current db reference
+                        self.db = channel_id  
                         
                 except Exception as e:
                     self.LOGGER(__name__).warning(f"Could not load DB channel {channel_id}: {e}")
-                    # Remove invalid channel from database
+                    
                     await self.mongodb.remove_db_channel(channel_id)
         except Exception as e:
             self.LOGGER(__name__).warning(f"Error loading DB channels: {e}")
 
-        # Load shortner settings
+        
         try:
             shortner_settings = await self.mongodb.get_shortner_settings()
             self.short_url = shortner_settings.get('short_url', getattr(sys.modules['config'], 'SHORT_URL', ''))
@@ -245,9 +245,9 @@ class Bot(Client):
         except Exception as e:
             self.LOGGER(__name__).warning(f"Error loading shortner settings: {e}")
 
-        # ---------------------------------------------
         
-        # Print bot information clearly
+        
+        
         print("\n" + "="*50)
         print("🤖 BOT SUCCESSFULLY STARTED!")
         print("="*50)
@@ -263,7 +263,7 @@ class Bot(Client):
         self.LOGGER(__name__).info(f"Bot Running..! Made by @rohithinte thandha ")
         self.LOGGER(__name__).info(f"Bot Username: @{self.username}")
 
-        # Start Web Server
+        
         app = web.AppRunner(await web_server())
         await app.setup()
         await web.TCPSite(app, "0.0.0.0", PORT).start()
