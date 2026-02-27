@@ -2,7 +2,7 @@ import random
 import logging
 import asyncio
 from bot import Bot
-from pyrogram import __version__
+from pyrogram import __version__, ContinuePropagation
 from pyrogram.enums import ParseMode
 from plugins.FORMATS import *
 from config import *
@@ -86,7 +86,7 @@ async def authoUser(query, id, owner_only=False):
         return True
 
 
-@Bot.on_callback_query()
+@Bot.on_callback_query(group=1)
 async def cb_handler(client: Bot, query: CallbackQuery):
     data = query.data
     if data == "close":
@@ -1176,6 +1176,9 @@ async def cb_handler(client: Bot, query: CallbackQuery):
             )
         else:
             await query.message.reply("Failed to disable the shortener. Please try again.")
+
+    else:
+        raise ContinuePropagation
     
 
     
