@@ -1,6 +1,7 @@
 from pyrogram import Client, filters
 from pyrogram.types import Message, CallbackQuery, InlineKeyboardButton, InlineKeyboardMarkup
 import time
+from config import OWNER_ID
 
 import psutil
 import shutil
@@ -8,7 +9,7 @@ import shutil
 
 
 async def admins(client, query):
-    if not (query.from_user.id==client.owner):
+    if not (query.from_user.id==OWNER_ID):
         return await query.answer('This can only be used by owner.')
     msg = f"""<blockquote>**Admin Settings:**</blockquote>
 **Admin User IDs:** {", ".join(f"`{a}`" for a in client.admins)}
@@ -165,7 +166,7 @@ async def remove_admins(client: Client, query: CallbackQuery):
     
     try:
         for identifier in ids:
-            if int(identifier) == client.owner:
+            if int(identifier) == OWNER_ID:
                 await client.send_message(query.from_user.id, "Nigga i can never remove the owner from the admin list!!")
                 continue
             if int(identifier) in client.admins:

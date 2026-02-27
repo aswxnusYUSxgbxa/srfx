@@ -1,90 +1,79 @@
-by
-@rohit_1888
-
-on Telegram 
-[25-Feb-26 10:32:31 - WARNING] - __main__ - Telegram says: [400 CHANNEL_INVALID] (caused by "channels.GetChannels") Pyrogram 2.3.45 thinks: The channel parameter is invalid
-[25-Feb-26 10:32:31 - WARNING] - __main__ - Make Sure bot is Admin in DB Channel, and Double check the CHANNEL_ID Value, Current Value -1002568581749
-[25-Feb-26 10:32:31 - INFO] - __main__ - 
-Bot Stopped. @rohit_1888 for support
-[25-Feb-26 10:36:36 - INFO] - __main__ - Bot Running..! Made by @rohit_1888
-[25-Feb-26 10:36:36 - INFO] - __main__ - Bot Username: @whapiybbot
-[25-Feb-26 10:36:36 - INFO] - __main__ - Bot is now running. Thanks to @rohit_1888
-[25-Feb-26 10:37:31 - INFO] - __main__ - Shutting down...
-[25-Feb-26 10:37:44 - INFO] - __main__ - Bot Running..! Made by @rohit_1888
-[25-Feb-26 10:37:44 - INFO] - __main__ - Bot Username: @whapiybbot
-[25-Feb-26 10:37:44 - INFO] - __main__ - Bot is now running. Thanks to @rohit_1888
-[25-Feb-26 10:38:01 - INFO] - root - Received /start command from user ID: 1137799257
-[25-Feb-26 10:47:08 - INFO] - __main__ - Shutting down...
-[25-Feb-26 15:16:43 - WARNING] - __main__ - Telegram says: [400 CHANNEL_INVALID] (caused by "channels.GetChannels") Pyrogram 2.3.50 thinks: The channel parameter is invalid
-[25-Feb-26 15:16:43 - WARNING] - __main__ - Make Sure bot is Admin in DB Channel, and Double check the CHANNEL_ID Value, Current Value -1002568581749
-[25-Feb-26 15:16:43 - INFO] - __main__ - 
-Bot Stopped. @rohit_1888 for support
-[25-Feb-26 15:20:02 - INFO] - __main__ - Bot Running..! Made by @rohit_1888
-[25-Feb-26 15:20:02 - INFO] - __main__ - Bot Username: @whapiybbot
-[25-Feb-26 15:20:03 - INFO] - __main__ - Bot is now running. Thanks to @rohit_1888
-[25-Feb-26 15:21:34 - INFO] - root - Received /start command from user ID: 1137799257
-[25-Feb-26 15:21:36 - INFO] - root - Received /start command from user ID: 1137799257
-[25-Feb-26 15:21:39 - INFO] - root - Received /start command from user ID: 1137799257
-[25-Feb-26 15:21:44 - INFO] - root - Received /start command from user ID: 1137799257
-[25-Feb-26 15:43:21 - INFO] - __main__ - Shutting down...
-[25-Feb-26 15:43:34 - INFO] - __main__ - Bot Running..! Made by @rohithinte thandha 
-[25-Feb-26 15:43:34 - INFO] - __main__ - Bot Username: @whapiybbot
-[25-Feb-26 15:43:34 - INFO] - __main__ - Bot is now running. Thanks to @rohithinte thandha 
-[25-Feb-26 15:43:52 - INFO] - root - Received /start command from user ID: 1137799257
-[25-Feb-26 15:43:59 - INFO] - root - Received /start command from user ID: 1137799257
-[25-Feb-26 15:48:45 - INFO] - __main__ - Shutting down...
-[25-Feb-26 15:49:54 - WARNING] - __main__ - Error loading static fsub channel -: Telegram says: [400 USERNAME_INVALID] (caused by "contacts.ResolveUsername") Pyrogram 2.3.50 thinks: The username is invalid
-[25-Feb-26 15:49:54 - INFO] - __main__ - Bot Running..! Made by @rohithinte thandha 
-[25-Feb-26 15:49:54 - INFO] - __main__ - Bot Username: @whapiybbot
-[25-Feb-26 15:49:54 - INFO] - __main__ - Bot is now running. Thanks to @rohithinte thandha 
-[25-Feb-26 15:50:11 - INFO] - root - Received /start command from user ID: 1137799257
-[25-Feb-26 15:52:04 - INFO] - __main__ - Shutting down...
-[25-Feb-26 15:52:16 - WARNING] - __main__ - Error loading static fsub channel -: Telegram says: [400 USERNAME_INVALID] (caused by "contacts.ResolveUsername") Pyrogram 2.3.50 thinks: The username is invalid
-[25-Feb-26 15:52:17 - INFO] - __main__ - Bot Running..! Made by @rohithinte thandha 
-[25-Feb-26 15:52:17 - INFO] - __main__ - Bot Username: @whapiybbot
-[25-Feb-26 15:52:17 - INFO] - __main__ - Bot is now running. Thanks to @rohithinte thandha 
-[25-Feb-26 15:52:40 - INFO] - root - Received /start command from user ID: 1137799257
-[25-Feb-26 15:53:05 - INFO] - root - Received /start command from user ID: 1137799257
-[25-Feb-26 15:55:21 - ERROR] - pyrogram.dispatcher - Telegram says: [400 MEDIA_EMPTY] (caused by "messages.SendMedia") Pyrogram 2.3.50 thinks: The media you tried to send is invalid
-Traceback (most recent call last):
-  File "/home/aswin/aswn/lib/python3.13/site-packages/pyrogram/dispatcher.py", line 363, in handler_worker
-    await handler.callback(self.client, *args)
-  File "/home/aswin/aswn/lib/python3.13/site-packages/pyrogram/handlers/message_handler.py", line 154, in resolve_future_or_callback
-    await self.original_callback(client, message, *args)
-  File "/home/aswin/aswn/lib/python3.13/site-packages/pyromod/listen/listen.py", line 93, in resolve_listener
-    await self.user_callback(client, message, *args)
-  File "/home/aswin/repo/sra-fs/plugins/start.py", line 750, in on_get_video
-    await get_video(client, message)
-  File "/home/aswin/repo/sra-fs/plugins/start.py", line 1786, in get_video
-    sent_msg = await send_random_video(
-               ^^^^^^^^^^^^^^^^^^^^^^^^
-    ...<6 lines>...
-    )
-    ^
-  File "/home/aswin/repo/sra-fs/plugins/start.py", line 824, in send_random_video
-    sent_msg = await client.send_video(
-               ^^^^^^^^^^^^^^^^^^^^^^^^
-    ...<6 lines>...
-    )
-    ^
-  File "/home/aswin/aswn/lib/python3.13/site-packages/pyrogram/methods/messages/send_video.py", line 313, in send_video
-    r = await self.invoke(rpc)
-        ^^^^^^^^^^^^^^^^^^^^^^
-  File "/home/aswin/aswn/lib/python3.13/site-packages/pyrogram/methods/advanced/invoke.py", line 80, in invoke
-    r = await self.session.invoke(
-        ^^^^^^^^^^^^^^^^^^^^^^^^^^
-    ...<4 lines>...
-    )
-    ^
-  File "/home/aswin/aswn/lib/python3.13/site-packages/pyrogram/session/session.py", line 420, in invoke
-    return await self.send(query, timeout=timeout)
-           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/home/aswin/aswn/lib/python3.13/site-packages/pyrogram/session/session.py", line 377, in send
-    RPCError.raise_it(result, type(data))
-    ~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^
-  File "/home/aswin/aswn/lib/python3.13/site-packages/pyrogram/errors/rpc_error.py", line 93, in raise_it
-    raise getattr(
-    ...<5 lines>...
-      is_signed=is_signed)
-pyrogram.errors.exceptions.bad_request_400.MediaEmpty: Telegram says: [400 MEDIA_EMPTY] (caused by "messages.SendMedia") Pyrogram 2.3.50 thinks: The media you tried to send is invalid
-[25-Feb-26 16:12:26 - INFO] - __main__ - Shutting down...
+[26-Feb-26 08:25:46 - WARNING] - __main__ - Telegram says: [400 CHANNEL_INVALID] (caused by "channels.GetChannels") Pyrogram 2.3.50 thinks: The channel parameter is invalid
+[26-Feb-26 08:25:46 - WARNING] - __main__ - Make Sure bot is Admin in DB Channel, and Double check the CHANNEL_ID Value, Current Value -1002568581749
+[26-Feb-26 08:25:46 - INFO] - __main__ - 
+Bot Stopped. @rohithinte thandha  for support
+[26-Feb-26 08:31:24 - WARNING] - __main__ - Telegram says: [400 CHANNEL_INVALID] (caused by "channels.GetChannels") Pyrogram 2.3.50 thinks: The channel parameter is invalid
+[26-Feb-26 08:31:24 - WARNING] - __main__ - Make Sure bot is Admin in DB Channel, and Double check the CHANNEL_ID Value, Current Value -1002568581749
+[26-Feb-26 08:31:24 - INFO] - __main__ - 
+Bot Stopped. @rohithinte thandha  for support
+[26-Feb-26 08:31:24 - INFO] - __main__ - Attempting to list visible channels/chats...
+[26-Feb-26 08:31:25 - ERROR] - __main__ - Failed to list dialogs: Telegram says: [400 BOT_METHOD_INVALID] (caused by "messages.GetDialogs") Pyrogram 2.3.50 thinks: The method can't be used by bots
+[26-Feb-26 08:51:44 - WARNING] - __main__ - Telegram says: [400 CHANNEL_INVALID] (caused by "channels.GetChannels") Pyrogram 2.3.50 thinks: The channel parameter is invalid
+[26-Feb-26 08:51:44 - WARNING] - __main__ - Make Sure bot is Admin in DB Channel, and Double check the CHANNEL_ID Value, Current Value -1002568581749
+[26-Feb-26 08:51:44 - WARNING] - __main__ - 
+Bot Starting without DB Channel access. Please forward a message to the bot to check the correct Channel ID.
+[26-Feb-26 08:51:47 - INFO] - __main__ - Bot Running..! Made by @rohithinte thandha 
+[26-Feb-26 08:51:47 - INFO] - __main__ - Bot Username: @whapiybbot
+[26-Feb-26 08:51:48 - INFO] - __main__ - Bot is now running. Thanks to @rohithinte thandha 
+[26-Feb-26 08:53:13 - INFO] - root - [DEBUG] Received message in Chat: test watermark (ID: -1002454896752, Type: ChatType.CHANNEL)
+[26-Feb-26 08:53:17 - INFO] - root - [DEBUG] Received message in Chat: test watermark (ID: -1002454896752, Type: ChatType.CHANNEL)
+[26-Feb-26 08:54:04 - INFO] - root - [DEBUG] Received message in Chat: fsub (ID: -1002696078507, Type: ChatType.CHANNEL)
+[26-Feb-26 08:54:07 - INFO] - root - [DEBUG] Received message in Chat: fsub (ID: -1002696078507, Type: ChatType.CHANNEL)
+[26-Feb-26 08:54:59 - INFO] - __main__ - Shutting down...
+[26-Feb-26 08:55:18 - INFO] - __main__ - Bot Running..! Made by @rohithinte thandha 
+[26-Feb-26 08:55:18 - INFO] - __main__ - Bot Username: @whapiybbot
+[26-Feb-26 08:55:18 - INFO] - __main__ - Bot is now running. Thanks to @rohithinte thandha 
+[26-Feb-26 08:55:29 - INFO] - root - [DEBUG] Received message in Chat: test watermark (ID: -1002454896752, Type: ChatType.CHANNEL)
+[26-Feb-26 08:55:40 - INFO] - root - [DEBUG] Received message in Chat: None (ID: 1137799257, Type: ChatType.PRIVATE)
+[26-Feb-26 08:55:40 - INFO] - root - Received /start command from user ID: 1137799257
+[26-Feb-26 08:56:08 - INFO] - __main__ - Shutting down...
+[26-Feb-26 08:56:37 - INFO] - __main__ - Bot Running..! Made by @rohithinte thandha 
+[26-Feb-26 08:56:37 - INFO] - __main__ - Bot Username: @whapiybbot
+[26-Feb-26 08:56:37 - INFO] - __main__ - Bot is now running. Thanks to @rohithinte thandha 
+[26-Feb-26 08:56:40 - INFO] - root - [DEBUG] Received message in Chat: None (ID: 1137799257, Type: ChatType.PRIVATE)
+[26-Feb-26 08:56:40 - INFO] - root - Received /start command from user ID: 1137799257
+[26-Feb-26 08:56:53 - INFO] - root - [DEBUG] Received message in Chat: None (ID: 1137799257, Type: ChatType.PRIVATE)
+[26-Feb-26 09:11:00 - INFO] - __main__ - Shutting down...
+[26-Feb-26 09:11:17 - INFO] - __main__ - Bot Running..! Made by @rohithinte thandha 
+[26-Feb-26 09:11:17 - INFO] - __main__ - Bot Username: @whapiybbot
+[26-Feb-26 09:11:17 - INFO] - __main__ - Bot is now running. Thanks to @rohithinte thandha 
+[26-Feb-26 09:11:25 - INFO] - root - [DEBUG] Received message in Chat: None (ID: 1137799257, Type: ChatType.PRIVATE)
+[26-Feb-26 09:11:25 - INFO] - root - Received /start command from user ID: 1137799257
+[26-Feb-26 09:11:32 - INFO] - root - [DEBUG] Received message in Chat: None (ID: 1137799257, Type: ChatType.PRIVATE)
+[26-Feb-26 09:13:31 - INFO] - root - [DEBUG] Received message in Chat: None (ID: 1137799257, Type: ChatType.PRIVATE)
+[26-Feb-26 09:13:31 - INFO] - root - Received /start command from user ID: 1137799257
+[26-Feb-26 09:13:38 - INFO] - root - [DEBUG] Received message in Chat: None (ID: 1137799257, Type: ChatType.PRIVATE)
+[26-Feb-26 09:13:51 - INFO] - root - [DEBUG] Received message in Chat: None (ID: 1137799257, Type: ChatType.PRIVATE)
+[26-Feb-26 09:14:06 - INFO] - root - [DEBUG] Received message in Chat: None (ID: 1137799257, Type: ChatType.PRIVATE)
+[26-Feb-26 09:14:06 - INFO] - root - Received /start command from user ID: 1137799257
+[26-Feb-26 09:52:53 - WARNING] - pyrogram.connection.connection - Unable to connect due to network issues: [Errno 101] Network is unreachable
+[26-Feb-26 09:52:54 - WARNING] - pyrogram.connection.connection - Unable to connect due to network issues: [Errno 101] Network is unreachable
+[26-Feb-26 09:52:55 - WARNING] - pyrogram.connection.connection - Unable to connect due to network issues: [Errno 101] Network is unreachable
+[26-Feb-26 09:52:56 - WARNING] - pyrogram.connection.connection - Connection failed! Trying again...
+[26-Feb-26 09:52:56 - WARNING] - pyrogram.connection.connection - Unable to connect due to network issues: [Errno 101] Network is unreachable
+[26-Feb-26 09:52:57 - WARNING] - pyrogram.connection.connection - Unable to connect due to network issues: [Errno 101] Network is unreachable
+[26-Feb-26 12:27:26 - WARNING] - pyrogram.connection.connection - Unable to connect due to network issues: [Errno 101] Network is unreachable
+[26-Feb-26 12:27:27 - WARNING] - pyrogram.connection.connection - Unable to connect due to network issues: [Errno 101] Network is unreachable
+[26-Feb-26 12:37:51 - INFO] - __main__ - Shutting down...
+[27-Feb-26 05:39:34 - INFO] - __main__ - Bot Running..! Made by @rohithinte thandha 
+[27-Feb-26 05:39:34 - INFO] - __main__ - Bot Username: @whapiybbot
+[27-Feb-26 05:39:34 - INFO] - __main__ - Bot is now running. Thanks to @rohithinte thandha 
+[27-Feb-26 05:39:49 - INFO] - root - [DEBUG] Received message in Chat: None (ID: 1137799257, Type: ChatType.PRIVATE)
+[27-Feb-26 05:39:52 - INFO] - root - [DEBUG] Received message in Chat: None (ID: 1137799257, Type: ChatType.PRIVATE)
+[27-Feb-26 05:39:52 - INFO] - root - Received /start command from user ID: 1137799257
+[27-Feb-26 05:41:23 - INFO] - root - [DEBUG] Received message in Chat: None (ID: 1137799257, Type: ChatType.PRIVATE)
+[27-Feb-26 05:44:53 - INFO] - __main__ - Shutting down...
+[27-Feb-26 05:45:03 - INFO] - __main__ - Bot Running..! Made by @rohithinte thandha 
+[27-Feb-26 05:45:03 - INFO] - __main__ - Bot Username: @whapiybbot
+[27-Feb-26 05:45:04 - INFO] - __main__ - Bot is now running. Thanks to @rohithinte thandha 
+[27-Feb-26 05:45:20 - INFO] - root - [DEBUG] Received message in Chat: None (ID: 1137799257, Type: ChatType.PRIVATE)
+[27-Feb-26 05:45:23 - INFO] - root - [DEBUG] Received message in Chat: None (ID: 1137799257, Type: ChatType.PRIVATE)
+[27-Feb-26 05:45:23 - INFO] - root - Received /start command from user ID: 1137799257
+[27-Feb-26 05:45:24 - INFO] - root - [DEBUG] Received message in Chat: None (ID: 1137799257, Type: ChatType.PRIVATE)
+[27-Feb-26 05:56:49 - WARNING] - pyrogram.connection.connection - Unable to connect due to network issues: [Errno 113] Connect call failed ('91.108.56.130', 443)
+[27-Feb-26 06:01:37 - INFO] - __main__ - Shutting down...
+[27-Feb-26 06:01:49 - INFO] - __main__ - Bot Running..! Made by @rohithinte thandha 
+[27-Feb-26 06:01:49 - INFO] - __main__ - Bot Username: @whapiybbot
+[27-Feb-26 06:01:49 - INFO] - __main__ - Bot is now running. Thanks to @rohithinte thandha 
+[27-Feb-26 06:05:38 - INFO] - root - [DEBUG] Received message in Chat: None (ID: 1137799257, Type: ChatType.PRIVATE)
+[27-Feb-26 06:05:38 - INFO] - root - Received /start command from user ID: 1137799257

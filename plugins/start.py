@@ -27,7 +27,7 @@ from pyrogram.errors import FloodWait, UserIsBlocked, InputUserDeactivated
 from plugins.autoDelete import auto_del_notification, delete_message
 from bot import Bot
 from config import *
-from helper.helper_func import is_admin, subscribed, banUser
+from helper.helper_func import is_admin, subscribed, banUser, is_subscribed
 from helper_func import *
 from database.database import db
 from database.db_premium import *

@@ -8,9 +8,6 @@ from pyrogram.errors import UserNotParticipant, Forbidden, PeerIdInvalid, ChatAd
 from datetime import datetime, timedelta
 from pyrogram import errors
 
-user_id = Message.from_user.id
-is_admin = user_id in client.admins  
-
 async def encode(string):
     string_bytes = string.encode("ascii")
     base64_bytes = base64.urlsafe_b64encode(string_bytes)
@@ -498,3 +495,39 @@ async def batch_auto_del_notification(bot_username, messages, delay_time, transf
             await notification_msg.edit_text(f"<b>Pʀᴇᴠɪᴏᴜs Mᴇssᴀɢᴇ ᴡᴀs Dᴇʟᴇᴛᴇᴅ</b>")
     except Exception as e:
         print(f"Error updating notification message: {e}")
+
+
+async def is_admin_func(_, client, message):
+    if not message.from_user:
+        return False
+    user_id = message.from_user.id
+    if hasattr(client, 'admins'):
+        return user_id in client.admins
+    return False
+
+is_admin = filters.create(is_admin_func)
+
+
+async def ban_user_func(_, client, message):
+    if not message.from_user:
+        return False
+    user_id = message.from_user.id
+    if hasattr(client, 'mongodb'):
+         return await client.mongodb.is_banned(user_id)
+    return False
+
+banUser = filters.create(ban_user_func)
+
+
+async def is_subscribed(client, message):
+    if not message.from_user:
+        return False
+    user_id = message.from_user.id
+    statuses = await check_subscription(client, user_id)
+    return is_user_subscribed(statuses)
+
+
+async def subscribed_filter_func(_, client, message):
+    return await is_subscribed(client, message)
+
+subscribed = filters.create(subscribed_filter_func)

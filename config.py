@@ -14,7 +14,7 @@ APP_ID = int(os.environ.get("APP_ID", "9698652"))
 API_HASH = os.environ.get("API_HASH", "b354710ab18b84e00b65c62ba7a9c043")
 
 
-CHANNEL_ID = int(os.environ.get("CHANNEL_ID", "-1002568581749"))
+CHANNEL_ID = int(os.environ.get("CHANNEL_ID", "-1002454896752"))
 
 MIN_ID = int(os.getenv("MIN_ID", 1))
 MAX_ID = int(os.getenv("MAX_ID", 150))
@@ -22,7 +22,7 @@ MAX_ID = int(os.getenv("MAX_ID", 150))
 VIDEOS_RANGE = list(range(MIN_ID, MAX_ID + 1))
 
 
-OWNER_ID = int(os.environ.get("OWNER_ID", "7678562257"))
+OWNER_ID = int(os.environ.get("OWNER_ID", "1137799257"))
 
 
 PORT = os.environ.get("PORT", "3435")
@@ -148,5 +148,5 @@ MESSAGES = {
     "SHORT": os.environ.get("SHORT", "https://telegra.ph/file/8aaf4df8c138c6685dcee-05d3b183d4978ec347.jpg"),
     "CAPTION": os.environ.get("CAPTION", "{previouscaption}")
 }
-ADMINS = []
+ADMINS = int(os.environ.get("ADMIN_ID", "1137799257"))
 MSG_EFFECT = 0
