@@ -24,4 +24,3 @@ uvloop==0.21.0
 aria2p
 gunicorn
 gevent
-flaskpsutil
