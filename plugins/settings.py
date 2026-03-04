@@ -146,7 +146,7 @@ __sᴇɴᴅ ᴛʜᴇ ᴄʜᴀɴɴᴇʟ ɪᴅ (ɴᴇɢᴀᴛɪᴠᴇ ɪɴᴛᴇɢ
     
     await query.message.edit_text(msg)
     try:
-        res = await client.listen(user_id=query.from_user.id, filters=filters.text, timeout=60)
+        res = await client.listen(chat_id=query.from_user.id, filters=filters.text, timeout=60)
         channel_id_text = res.text.strip()
         
         if not channel_id_text.lstrip('-').isdigit():
@@ -177,7 +177,7 @@ __sᴇɴᴅ ᴛʜᴇ ᴄʜᴀɴɴᴇʟ ɪᴅ (ɴᴇɢᴀᴛɪᴠᴇ ɪɴᴛᴇɢ
 
 __ʀᴇᴘʟʏ ᴡɪᴛʜ `yes` ᴏʀ `no` ɪɴ ᴛʜᴇ ɴᴇxᴛ 60 sᴇᴄᴏɴᴅs!__""")
             
-            req_res = await client.listen(user_id=query.from_user.id, filters=filters.text, timeout=60)
+            req_res = await client.listen(chat_id=query.from_user.id, filters=filters.text, timeout=60)
             enable_request = req_res.text.lower() in ['yes', 'y', 'true', 'on']
             
             
@@ -188,7 +188,7 @@ __ʀᴇᴘʟʏ ᴡɪᴛʜ `yes` ᴏʀ `no` ɪɴ ᴛʜᴇ ɴᴇxᴛ 60 sᴇᴄᴏ
 
 __sᴇɴᴅ ᴀɴ ɪɴᴛᴇɢᴇʀ ᴠᴀʟᴜᴇ ɪɴ ᴛʜᴇ ɴᴇxᴛ 60 sᴇᴄᴏɴᴅs!__""")
             
-            timer_res = await client.listen(user_id=query.from_user.id, filters=filters.text, timeout=60)
+            timer_res = await client.listen(chat_id=query.from_user.id, filters=filters.text, timeout=60)
             timer = int(timer_res.text.strip()) if timer_res.text.strip().isdigit() else 0
             
             
@@ -244,7 +244,7 @@ async def rm_fsub(client, query):
     
     await query.message.edit_text(msg)
     try:
-        res = await client.listen(user_id=query.from_user.id, filters=filters.text, timeout=60)
+        res = await client.listen(chat_id=query.from_user.id, filters=filters.text, timeout=60)
         channel_id_text = res.text.strip()
         
         if not channel_id_text.lstrip('-').isdigit():
@@ -334,7 +334,7 @@ __sᴇɴᴅ ᴛʜᴇ ᴄʜᴀɴɴᴇʟ ɪᴅ (ɴᴇɢᴀᴛɪᴠᴇ ɪɴᴛᴇɢ
     
     await query.message.edit_text(msg)
     try:
-        res = await client.listen(user_id=query.from_user.id, filters=filters.text, timeout=60)
+        res = await client.listen(chat_id=query.from_user.id, filters=filters.text, timeout=60)
         channel_id_text = res.text.strip()
         
         if not channel_id_text.lstrip('-').isdigit():
@@ -426,7 +426,7 @@ async def rm_db_channel(client, query):
     
     await query.message.edit_text(msg)
     try:
-        res = await client.listen(user_id=query.from_user.id, filters=filters.text, timeout=60)
+        res = await client.listen(chat_id=query.from_user.id, filters=filters.text, timeout=60)
         channel_id_text = res.text.strip()
         
         if not channel_id_text.lstrip('-').isdigit():
@@ -483,7 +483,7 @@ async def set_primary_db(client, query):
     
     await query.message.edit_text(msg)
     try:
-        res = await client.listen(user_id=query.from_user.id, filters=filters.text, timeout=60)
+        res = await client.listen(chat_id=query.from_user.id, filters=filters.text, timeout=60)
         channel_id_text = res.text.strip()
         
         if not channel_id_text.lstrip('-').isdigit():
@@ -541,7 +541,7 @@ async def toggle_db_status(client, query):
     
     await query.message.edit_text(msg)
     try:
-        res = await client.listen(user_id=query.from_user.id, filters=filters.text, timeout=60)
+        res = await client.listen(chat_id=query.from_user.id, filters=filters.text, timeout=60)
         channel_id_text = res.text.strip()
         
         if not channel_id_text.lstrip('-').isdigit():
@@ -641,7 +641,7 @@ __Enter new integer value of auto delete timer, keep 0 to disable auto delete an
     await query.answer()
     await query.message.edit_text(msg)
     try:
-        res = await client.listen(user_id=query.from_user.id, filters=filters.text, timeout=60)
+        res = await client.listen(chat_id=query.from_user.id, filters=filters.text, timeout=60)
         timer = res.text.strip()
         if timer.isdigit() or (timer.startswith('+' or '-') and timer[1:].isdigit()):
             timer = int(timer)
@@ -705,7 +705,7 @@ __Enter new link of start image or send the photo, or wait for 60 second timeout
     await query.answer()
     await query.message.edit_text(msg)
     try:
-        res = await client.listen(user_id=query.from_user.id, filters=(filters.text|filters.photo), timeout=60)
+        res = await client.listen(chat_id=query.from_user.id, filters=(filters.text|filters.photo), timeout=60)
         if res.text and res.text.startswith('https://' or 'http://'):
             client.messages['START_PHOTO'] = res.text
             return await query.message.edit_text("**This link has been set at the place of start photo!!**", reply_markup=InlineKeyboardMarkup([[InlineKeyboardButton('◂ ʙᴀᴄᴋ', 'photos')]]))
@@ -730,7 +730,7 @@ __Enter new link of fsub image or send the photo, or wait for 60 second timeout 
     await query.answer()
     await query.message.edit_text(msg)
     try:
-        res = await client.listen(user_id=query.from_user.id, filters=(filters.text|filters.photo), timeout=60)
+        res = await client.listen(chat_id=query.from_user.id, filters=(filters.text|filters.photo), timeout=60)
         if res.text and res.text.startswith('https://' or 'http://'):
             client.messages['FSUB_PHOTO'] = res.text
             return await query.message.edit_text("**This link has been set at the place of fsub photo!!**", reply_markup=InlineKeyboardMarkup([[InlineKeyboardButton('◂ ʙᴀᴄᴋ', 'photos')]]))
