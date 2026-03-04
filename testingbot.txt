@@ -1,42 +1,42 @@
 [26-Feb-26 08:25:46 - WARNING] - __main__ - Telegram says: [400 CHANNEL_INVALID] (caused by "channels.GetChannels") Pyrogram 2.3.50 thinks: The channel parameter is invalid
 [26-Feb-26 08:25:46 - WARNING] - __main__ - Make Sure bot is Admin in DB Channel, and Double check the CHANNEL_ID Value, Current Value -1002568581749
-[26-Feb-26 08:25:46 - INFO] - __main__ - 
+[26-Feb-26 08:25:46 - INFO] - __main__ -
 Bot Stopped. @rohithinte thandha  for support
 [26-Feb-26 08:31:24 - WARNING] - __main__ - Telegram says: [400 CHANNEL_INVALID] (caused by "channels.GetChannels") Pyrogram 2.3.50 thinks: The channel parameter is invalid
 [26-Feb-26 08:31:24 - WARNING] - __main__ - Make Sure bot is Admin in DB Channel, and Double check the CHANNEL_ID Value, Current Value -1002568581749
-[26-Feb-26 08:31:24 - INFO] - __main__ - 
+[26-Feb-26 08:31:24 - INFO] - __main__ -
 Bot Stopped. @rohithinte thandha  for support
 [26-Feb-26 08:31:24 - INFO] - __main__ - Attempting to list visible channels/chats...
 [26-Feb-26 08:31:25 - ERROR] - __main__ - Failed to list dialogs: Telegram says: [400 BOT_METHOD_INVALID] (caused by "messages.GetDialogs") Pyrogram 2.3.50 thinks: The method can't be used by bots
 [26-Feb-26 08:51:44 - WARNING] - __main__ - Telegram says: [400 CHANNEL_INVALID] (caused by "channels.GetChannels") Pyrogram 2.3.50 thinks: The channel parameter is invalid
 [26-Feb-26 08:51:44 - WARNING] - __main__ - Make Sure bot is Admin in DB Channel, and Double check the CHANNEL_ID Value, Current Value -1002568581749
-[26-Feb-26 08:51:44 - WARNING] - __main__ - 
+[26-Feb-26 08:51:44 - WARNING] - __main__ -
 Bot Starting without DB Channel access. Please forward a message to the bot to check the correct Channel ID.
-[26-Feb-26 08:51:47 - INFO] - __main__ - Bot Running..! Made by @rohithinte thandha 
+[26-Feb-26 08:51:47 - INFO] - __main__ - Bot Running..! Made by @rohithinte thandha
 [26-Feb-26 08:51:47 - INFO] - __main__ - Bot Username: @whapiybbot
-[26-Feb-26 08:51:48 - INFO] - __main__ - Bot is now running. Thanks to @rohithinte thandha 
+[26-Feb-26 08:51:48 - INFO] - __main__ - Bot is now running. Thanks to @rohithinte thandha
 [26-Feb-26 08:53:13 - INFO] - root - [DEBUG] Received message in Chat: test watermark (ID: -1002454896752, Type: ChatType.CHANNEL)
 [26-Feb-26 08:53:17 - INFO] - root - [DEBUG] Received message in Chat: test watermark (ID: -1002454896752, Type: ChatType.CHANNEL)
 [26-Feb-26 08:54:04 - INFO] - root - [DEBUG] Received message in Chat: fsub (ID: -1002696078507, Type: ChatType.CHANNEL)
 [26-Feb-26 08:54:07 - INFO] - root - [DEBUG] Received message in Chat: fsub (ID: -1002696078507, Type: ChatType.CHANNEL)
 [26-Feb-26 08:54:59 - INFO] - __main__ - Shutting down...
-[26-Feb-26 08:55:18 - INFO] - __main__ - Bot Running..! Made by @rohithinte thandha 
+[26-Feb-26 08:55:18 - INFO] - __main__ - Bot Running..! Made by @rohithinte thandha
 [26-Feb-26 08:55:18 - INFO] - __main__ - Bot Username: @whapiybbot
-[26-Feb-26 08:55:18 - INFO] - __main__ - Bot is now running. Thanks to @rohithinte thandha 
+[26-Feb-26 08:55:18 - INFO] - __main__ - Bot is now running. Thanks to @rohithinte thandha
 [26-Feb-26 08:55:29 - INFO] - root - [DEBUG] Received message in Chat: test watermark (ID: -1002454896752, Type: ChatType.CHANNEL)
 [26-Feb-26 08:55:40 - INFO] - root - [DEBUG] Received message in Chat: None (ID: 1137799257, Type: ChatType.PRIVATE)
 [26-Feb-26 08:55:40 - INFO] - root - Received /start command from user ID: 1137799257
 [26-Feb-26 08:56:08 - INFO] - __main__ - Shutting down...
-[26-Feb-26 08:56:37 - INFO] - __main__ - Bot Running..! Made by @rohithinte thandha 
+[26-Feb-26 08:56:37 - INFO] - __main__ - Bot Running..! Made by @rohithinte thandha
 [26-Feb-26 08:56:37 - INFO] - __main__ - Bot Username: @whapiybbot
-[26-Feb-26 08:56:37 - INFO] - __main__ - Bot is now running. Thanks to @rohithinte thandha 
+[26-Feb-26 08:56:37 - INFO] - __main__ - Bot is now running. Thanks to @rohithinte thandha
 [26-Feb-26 08:56:40 - INFO] - root - [DEBUG] Received message in Chat: None (ID: 1137799257, Type: ChatType.PRIVATE)
 [26-Feb-26 08:56:40 - INFO] - root - Received /start command from user ID: 1137799257
 [26-Feb-26 08:56:53 - INFO] - root - [DEBUG] Received message in Chat: None (ID: 1137799257, Type: ChatType.PRIVATE)
 [26-Feb-26 09:11:00 - INFO] - __main__ - Shutting down...
-[26-Feb-26 09:11:17 - INFO] - __main__ - Bot Running..! Made by @rohithinte thandha 
+[26-Feb-26 09:11:17 - INFO] - __main__ - Bot Running..! Made by @rohithinte thandha
 [26-Feb-26 09:11:17 - INFO] - __main__ - Bot Username: @whapiybbot
-[26-Feb-26 09:11:17 - INFO] - __main__ - Bot is now running. Thanks to @rohithinte thandha 
+[26-Feb-26 09:11:17 - INFO] - __main__ - Bot is now running. Thanks to @rohithinte thandha
 [26-Feb-26 09:11:25 - INFO] - root - [DEBUG] Received message in Chat: None (ID: 1137799257, Type: ChatType.PRIVATE)
 [26-Feb-26 09:11:25 - INFO] - root - Received /start command from user ID: 1137799257
 [26-Feb-26 09:11:32 - INFO] - root - [DEBUG] Received message in Chat: None (ID: 1137799257, Type: ChatType.PRIVATE)
@@ -55,25 +55,25 @@ Bot Starting without DB Channel access. Please forward a message to the bot to c
 [26-Feb-26 12:27:26 - WARNING] - pyrogram.connection.connection - Unable to connect due to network issues: [Errno 101] Network is unreachable
 [26-Feb-26 12:27:27 - WARNING] - pyrogram.connection.connection - Unable to connect due to network issues: [Errno 101] Network is unreachable
 [26-Feb-26 12:37:51 - INFO] - __main__ - Shutting down...
-[27-Feb-26 05:39:34 - INFO] - __main__ - Bot Running..! Made by @rohithinte thandha 
+[27-Feb-26 05:39:34 - INFO] - __main__ - Bot Running..! Made by @rohithinte thandha
 [27-Feb-26 05:39:34 - INFO] - __main__ - Bot Username: @whapiybbot
-[27-Feb-26 05:39:34 - INFO] - __main__ - Bot is now running. Thanks to @rohithinte thandha 
+[27-Feb-26 05:39:34 - INFO] - __main__ - Bot is now running. Thanks to @rohithinte thandha
 [27-Feb-26 05:39:49 - INFO] - root - [DEBUG] Received message in Chat: None (ID: 1137799257, Type: ChatType.PRIVATE)
 [27-Feb-26 05:39:52 - INFO] - root - [DEBUG] Received message in Chat: None (ID: 1137799257, Type: ChatType.PRIVATE)
 [27-Feb-26 05:39:52 - INFO] - root - Received /start command from user ID: 1137799257
 [27-Feb-26 05:41:23 - INFO] - root - [DEBUG] Received message in Chat: None (ID: 1137799257, Type: ChatType.PRIVATE)
 [27-Feb-26 05:44:53 - INFO] - __main__ - Shutting down...
-[27-Feb-26 05:45:03 - INFO] - __main__ - Bot Running..! Made by @rohithinte thandha 
+[27-Feb-26 05:45:03 - INFO] - __main__ - Bot Running..! Made by @rohithinte thandha
 [27-Feb-26 05:45:03 - INFO] - __main__ - Bot Username: @whapiybbot
-[27-Feb-26 05:45:04 - INFO] - __main__ - Bot is now running. Thanks to @rohithinte thandha 
+[27-Feb-26 05:45:04 - INFO] - __main__ - Bot is now running. Thanks to @rohithinte thandha
 [27-Feb-26 05:45:20 - INFO] - root - [DEBUG] Received message in Chat: None (ID: 1137799257, Type: ChatType.PRIVATE)
 [27-Feb-26 05:45:23 - INFO] - root - [DEBUG] Received message in Chat: None (ID: 1137799257, Type: ChatType.PRIVATE)
 [27-Feb-26 05:45:23 - INFO] - root - Received /start command from user ID: 1137799257
 [27-Feb-26 05:45:24 - INFO] - root - [DEBUG] Received message in Chat: None (ID: 1137799257, Type: ChatType.PRIVATE)
 [27-Feb-26 05:56:49 - WARNING] - pyrogram.connection.connection - Unable to connect due to network issues: [Errno 113] Connect call failed ('91.108.56.130', 443)
 [27-Feb-26 06:01:37 - INFO] - __main__ - Shutting down...
-[27-Feb-26 06:01:49 - INFO] - __main__ - Bot Running..! Made by @rohithinte thandha 
+[27-Feb-26 06:01:49 - INFO] - __main__ - Bot Running..! Made by @rohithinte thandha
 [27-Feb-26 06:01:49 - INFO] - __main__ - Bot Username: @whapiybbot
-[27-Feb-26 06:01:49 - INFO] - __main__ - Bot is now running. Thanks to @rohithinte thandha 
+[27-Feb-26 06:01:49 - INFO] - __main__ - Bot is now running. Thanks to @rohithinte thandha
 [27-Feb-26 06:05:38 - INFO] - root - [DEBUG] Received message in Chat: None (ID: 1137799257, Type: ChatType.PRIVATE)
 [27-Feb-26 06:05:38 - INFO] - root - Received /start command from user ID: 1137799257

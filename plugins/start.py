@@ -13,7 +13,7 @@ from pytz import timezone
 import pytz
 
 from pyrogram import Client, filters
-from pyrogram.enums import ParseMode, ChatAction
+from pyrogram.enums import ParseMode, ChatAction, ChatMemberStatus
 from pyrogram.types import (
     Message,
     KeyboardButton,
@@ -27,7 +27,7 @@ from pyrogram.errors import FloodWait, UserIsBlocked, InputUserDeactivated
 from plugins.autoDelete import auto_del_notification, delete_message
 from bot import Bot
 from config import *
-from helper.helper_func import is_admin, subscribed, banUser, is_subscribed
+from helper.helper_func import is_admin, subscribed, banUser, is_subscribed, check_subscription
 from helper_func import *
 from database.database import db
 from database.db_premium import *
@@ -50,25 +50,25 @@ async def start_command(client: Client, message: Message):
     text = message.text or ""
     logging.info(f"Received /start command from user ID: {id}")
 
-    
-    
-    
+
+
+
     if await db.ban_user_exist(user_id):
         return await message.reply_text(BAN_TXT, quote=True)
-    
-    
+
+
     is_banned = await client.mongodb.is_banned(user_id)
     if is_banned:
         return await message.reply("**You have been banned from using this bot!**")
 
-    
+
     try:
         if not await db.present_user(id):
             await db.add_user(id)
     except Exception as e:
         logging.error(f"Error ensuring user exists ({id}): {e}")
-        
-    
+
+
     present = await client.mongodb.present_user(user_id)
     if not present:
         try:
@@ -76,7 +76,7 @@ async def start_command(client: Client, message: Message):
         except Exception as e:
             client.LOGGER(__name__).warning(f"Error adding a user to new DB:\n{e}")
 
-    
+
     try:
         verify_status = await db.get_verify_status(id) or {}
     except Exception as e:
@@ -89,7 +89,7 @@ async def start_command(client: Client, message: Message):
         logging.error(f"Error fetching verify expiry config: {e}")
         VERIFY_EXPIRE = None
 
-    
+
     try:
         if verify_status.get("is_verified") and VERIFY_EXPIRE:
             verified_time = verify_status.get("verified_time", 0)
@@ -100,10 +100,10 @@ async def start_command(client: Client, message: Message):
         logging.error(f"Error while checking/refreshing verify expiry for {id}: {e}")
 
 
-    
+
 
     if len(text) > 7:
-        
+
         if "ref_" in text:
             try:
                 _, ref_user_id_str = text.split("_", 1)
@@ -132,7 +132,7 @@ async def start_command(client: Client, message: Message):
                             logging.error(f"Error fetching referral count for {ref_user_id}: {e}")
                             referral_count = 0
 
-                        
+
                         if REFERRAL_COUNT and referral_count > 0 and (referral_count % REFERRAL_COUNT == 0):
                             try:
                                 is_prem = await is_premium_user(ref_user_id)
@@ -184,7 +184,7 @@ async def start_command(client: Client, message: Message):
                             except Exception as e:
                                 logging.error(f"Error while granting/extending premium: {e}")
 
-        
+
         if "verify_" in text:
             try:
                 _, token = text.split("_", 1)
@@ -206,15 +206,15 @@ async def start_command(client: Client, message: Message):
                     quote=True
                 )
 
-        
+
         if text.startswith("/start get_photo_") or "get_photo_" in text:
             try:
                 if "get_photo_" in text:
                     _, user_id_str = text.split("get_photo_", 1)
                 else:
                     _, user_id_str = text.split("_", 2)
-                
-                
+
+
                 return await get_photo(client, message)
             except:
                 pass
@@ -231,31 +231,31 @@ async def start_command(client: Client, message: Message):
             except:
                 pass
 
-        
-        
+
+
         if not any(x in text for x in ["verify_", "ref_", "get_photo_", "get_video_", "get_batch_"]):
             try:
-                
+
                 if " " in text:
                     original_payload = text.split(" ", 1)[1]
                 else:
-                    original_payload = text 
+                    original_payload = text
 
                 base64_string = original_payload
                 is_short_link = False
-                
+
                 if base64_string.startswith("yu3elk"):
                     base64_string = base64_string[6:-1]
                     is_short_link = True
 
-                
+
                 is_user_pro = await client.mongodb.is_pro(user_id)
-                
-                
+
+
                 shortner_enabled = getattr(client, 'shortner_enabled', True)
 
-                
-                
+
+
                 if not is_user_pro and user_id != OWNER_ID and not is_short_link and shortner_enabled:
                     try:
                         short_link = get_short(f"https://t.me/{client.username}?start=yu3elk{base64_string}7", client)
@@ -281,9 +281,9 @@ async def start_command(client: Client, message: Message):
                             ]
                         ])
                     )
-                    return  
+                    return
 
-                
+
                 try:
                     string = await decode(base64_string)
                     argument = string.split("-")
@@ -291,108 +291,108 @@ async def start_command(client: Client, message: Message):
                     source_channel_id = None
 
                     if len(argument) == 3:
-                        
+
                         encoded_start = int(argument[1])
                         encoded_end = int(argument[2])
-                        
-                        
+
+
                         primary_multiplier = abs(client.db)
                         start_primary = int(encoded_start / primary_multiplier)
                         end_primary = int(encoded_end / primary_multiplier)
-                        
-                        
+
+
                         if encoded_start % primary_multiplier == 0 and encoded_end % primary_multiplier == 0:
                             source_channel_id = client.db
                             start = start_primary
                             end = end_primary
                         else:
-                            
+
                             db_channels = getattr(client, 'db_channels', {})
                             for channel_id_str in db_channels.keys():
                                 channel_id = int(channel_id_str)
                                 channel_multiplier = abs(channel_id)
                                 start_test = int(encoded_start / channel_multiplier)
                                 end_test = int(encoded_end / channel_multiplier)
-                                
+
                                 if encoded_start % channel_multiplier == 0 and encoded_end % channel_multiplier == 0:
                                     source_channel_id = channel_id
                                     start = start_test
                                     end = end_test
                                     break
-                            
-                            
+
+
                             if source_channel_id is None:
                                 source_channel_id = client.db
                                 start = start_primary
                                 end = end_primary
-                        
+
                         ids = range(start, end + 1) if start <= end else list(range(start, end - 1, -1))
 
                     elif len(argument) == 2:
-                        
+
                         encoded_msg = int(argument[1])
-                        
-                        
+
+
                         primary_multiplier = abs(client.db)
                         msg_id_primary = int(encoded_msg / primary_multiplier)
-                        
+
                         if encoded_msg % primary_multiplier == 0:
                             source_channel_id = client.db
                             ids = [msg_id_primary]
                         else:
-                            
+
                             db_channels = getattr(client, 'db_channels', {})
                             for channel_id_str in db_channels.keys():
                                 channel_id = int(channel_id_str)
                                 channel_multiplier = abs(channel_id)
                                 msg_id_test = int(encoded_msg / channel_multiplier)
-                                
+
                                 if encoded_msg % channel_multiplier == 0:
                                     source_channel_id = channel_id
                                     ids = [msg_id_test]
                                     break
-                            
-                            
+
+
                             if source_channel_id is None:
                                 source_channel_id = client.db
                                 ids = [msg_id_primary]
 
                 except Exception as e:
                     client.LOGGER(__name__).warning(f"Error decoding base64: {e}")
-                    
+
                     if not "ref_" in text and not "verify_" in text:
                         return await message.reply("⚠️ Invalid or expired link.")
                     return
 
-                
+
                 temp_msg = await message.reply("Wait A Sec..")
                 messages = []
 
                 try:
-                    
+
                     if source_channel_id:
                         try:
                             msgs = await client.get_messages(
                                 chat_id=source_channel_id,
                                 message_ids=list(ids)
                             )
-                            
+
                             valid_msgs = [msg for msg in msgs if msg is not None]
                             messages.extend(valid_msgs)
-                            
-                            
+
+
                             if len(valid_msgs) < len(list(ids)):
                                 missing_ids = [mid for mid in ids if mid not in {msg.id for msg in valid_msgs}]
                                 if missing_ids:
-                                    
+
                                     additional_messages = await get_messages(client, missing_ids)
                                     messages.extend(additional_messages)
                         except Exception as e:
                             client.LOGGER(__name__).warning(f"Error getting messages from source channel {source_channel_id}: {e}")
-                            
+
                             messages = await get_messages(client, ids)
                     else:
-                        
+
                         messages = await get_messages(client, ids)
                 except Exception as e:
                     await temp_msg.edit_text("Something went wrong!")
@@ -434,12 +434,12 @@ async def start_command(client: Client, message: Message):
                         client.LOGGER(__name__).warning(f"Failed to send message: {e}")
                         pass
 
-                
+
                 if messages and client.auto_del > 0:
-                    
+
                     transfer_link = original_payload
-                    
-                    
+
+
                     asyncio.create_task(batch_auto_del_notification(
                         bot_username=client.username,
                         messages=yugen_msgs,
@@ -451,44 +451,44 @@ async def start_command(client: Client, message: Message):
                 return
 
             except IndexError:
-                pass 
+                pass
 
-    
-    
-    
-    
-    
-    
+
+
+
+
+
+
     is_admin_user = user_id in client.admins or user_id == OWNER_ID
-    
+
     keyboard_buttons = [
         [KeyboardButton("Get Photo 📸"), KeyboardButton("Get Batch 📦")],
         [KeyboardButton("Get Video 🍒"), KeyboardButton("Plan Status 🔖")],
     ]
-    
+
     if is_admin_user:
         keyboard_buttons.append([KeyboardButton("Settings ⚙️")])
-        
+
     reply_kb = ReplyKeyboardMarkup(
         keyboard_buttons,
         resize_keyboard=True,
     )
 
-    
+
     referral_link = f"https://telegram.dog/{client.username}?start=ref_{user_id}"
-    
-    
-    
+
+
+
     inline_buttons = []
     if is_admin_user:
         inline_buttons.append([InlineKeyboardButton("⛩️ ꜱᴇᴛᴛɪɴɢꜱ ⛩️", callback_data="settings")])
-    
-    
+
+
     inline_buttons.append([InlineKeyboardButton("Help", callback_data="about"), InlineKeyboardButton("Close", callback_data='close')])
 
-    
+
     try:
-        
+
         start_caption = client.messages.get('START', START_MSG).format(
                 first=message.from_user.first_name or "",
                 last=message.from_user.last_name or "",
@@ -496,31 +496,31 @@ async def start_command(client: Client, message: Message):
                 mention=message.from_user.mention,
                 id=message.from_user.id,
             )
-        
-        
+
+
         start_caption += f"\n\n🎁 <b>Referral System:</b>\n"
         start_caption += f"🔗 Your Link: <code>{referral_link}</code>\n"
         start_caption += f"📊 Refer {REFERRAL_COUNT} users = {REFERRAL_PREMIUM_DAYS} Days Premium!"
 
         photo = client.messages.get("START_PHOTO", START_PIC)
-        
+
         if photo:
             await client.send_photo(
                 chat_id=message.chat.id,
                 photo=photo,
                 caption=start_caption,
-                reply_markup=reply_kb 
+                reply_markup=reply_kb
             )
-            
-            
-            
-            
-            
-            
-            
-            
-            
-            
+
+
+
+
+
+
+
+
+
+
             if is_admin_user:
                  await client.send_message(
                     chat_id=message.chat.id,
@@ -540,7 +540,7 @@ async def start_command(client: Client, message: Message):
                     text="<b>Admin Controls:</b>",
                     reply_markup=InlineKeyboardMarkup(inline_buttons)
                  )
-            
+
     except Exception as e:
         logging.error(f"Error sending start message: {e}")
         await message.reply(
@@ -562,19 +562,19 @@ async def start_command(client: Client, message: Message):
 @Bot.on_message(filters.command('check') & filters.private)
 async def check_command(client: Client, message: Message):
     user_id = message.from_user.id
-    
-    
+
+
     is_premium = await is_premium_user(user_id)
-    
+
     if is_premium:
-        
+
         return await message.reply_text(
             "✅ Yᴏᴜ ᴀʀᴇ ᴀ Pʀᴇᴍɪᴜᴍ Usᴇʀ.\n\n🔓 Nᴏ ᴠᴇʀɪғɪᴄᴀᴛɪᴏɴ ɴᴇᴇᴅᴇᴅ!",
             protect_content=False,
             quote=True
         )
-    
-    
+
+
     try:
         verify_status = await db.get_verify_status(user_id) or {}
         VERIFY_EXPIRE = await db.get_verified_time()
@@ -582,7 +582,7 @@ async def check_command(client: Client, message: Message):
         logging.error(f"Error fetching verify status: {e}")
         verify_status = {"is_verified": False}
         VERIFY_EXPIRE = None
-    
+
     if verify_status.get("is_verified", False):
         expiry_text = get_exp_time(VERIFY_EXPIRE) if VERIFY_EXPIRE else "the configured duration"
         return await message.reply_text(
@@ -590,8 +590,8 @@ async def check_command(client: Client, message: Message):
             protect_content=False,
             quote=True
         )
-    
-    
+
+
     try:
         shortener_url = await db.get_shortener_url()
         shortener_api = await db.get_shortener_api()
@@ -599,24 +599,24 @@ async def check_command(client: Client, message: Message):
         logging.error(f"Error fetching shortener settings: {e}")
         shortener_url = None
         shortener_api = None
-    
+
     if shortener_url and shortener_api:
-        
+
         try:
             token = ''.join(random.choices(string.ascii_letters + string.digits, k=10))
             await db.update_verify_status(user_id, verify_token=token, link="")
-            
+
             long_url = f"https://telegram.dog/{client.username}?start=verify_{token}"
             short_link = await get_shortlink(long_url)
-            
+
             tut_vid_url = await db.get_tut_video() or TUT_VID
-            
+
             btn = [
                 [InlineKeyboardButton("Click here", url=short_link),
                  InlineKeyboardButton('How to use the bot', url=tut_vid_url)],
                 [InlineKeyboardButton('BUY PREMIUM', callback_data='buy_prem')]
             ]
-            
+
             expiry_text = get_exp_time(VERIFY_EXPIRE) if VERIFY_EXPIRE else "the configured duration"
             return await message.reply(
                 f"Your ads token is expired or invalid. Please verify to access the files.\n\n"
@@ -635,7 +635,7 @@ async def check_command(client: Client, message: Message):
                 quote=True
             )
     else:
-        
+
         return await message.reply_text(
             "⚠️ Yᴏᴜ ɴᴇᴇᴅ ᴛᴏ ᴠᴇʀɪғʏ. Pʟᴇᴀsᴇ ᴜsᴇ /start ᴛᴏ ɢᴇᴛ ʏᴏᴜʀ ᴠᴇʀɪғɪᴄᴀᴛɪᴏɴ ʟɪɴᴋ.",
             protect_content=False,
@@ -649,24 +649,24 @@ async def on_plan_status(client: Client, message: Message):
     ist = timezone("Asia/Kolkata")
 
     user_id = message.from_user.id
-        
+
     if await db.ban_user_exist(user_id):
         return await message.reply_text(BAN_TXT, quote=True)
-        
-    
-    
+
+
+
     if not await is_subscribed(client, message):
         return await not_joined(client, message)
-    
+
     is_premium = await is_premium_user(user_id)
 
-    
+
     free_limit = await db.get_free_limit(user_id)
     free_enabled = await db.get_free_state(user_id)
     free_count = await db.check_free_usage(user_id)
 
     if is_premium:
-        
+
         user_data = await collection.find_one({"user_id": user_id})
         expiration_timestamp = user_data.get("expiration_timestamp") if user_data else None
 
@@ -691,7 +691,7 @@ async def on_plan_status(client: Client, message: Message):
                 f"Pʟᴀɴ Exᴘɪʀʏ: N/A"
             )
 
-        
+
         await message.reply_text(
             status_message,
             reply_markup=ReplyKeyboardMarkup(
@@ -703,7 +703,7 @@ async def on_plan_status(client: Client, message: Message):
         )
 
     elif free_enabled:
-        
+
         remaining_attempts = free_limit - free_count
         status_message = (
             f"Sᴜʙsᴄʀɪᴘᴛɪᴏɴ Sᴛᴀᴛᴜs: Fʀᴇᴇ (ᘜᗩᖇᗴᗴᗷ) 🆓\n\n"
@@ -720,7 +720,7 @@ async def on_plan_status(client: Client, message: Message):
         )
 
     else:
-        
+
         status_message = (
             f"Sᴜʙsᴄʀɪᴘᴛɪᴏɴ Sᴛᴀᴛᴜs: Fʀᴇᴇ (ᘜᗩᖇᗴᗴᗷ) (Dɪsᴀʙʟᴇᴅ)\n\n"
             f"Vɪᴅᴇᴏs Rᴇᴍᴀɪɴɪɴɢ Tᴏᴅᴀʏ: 0/{free_limit}"
@@ -739,42 +739,42 @@ async def on_plan_status(client: Client, message: Message):
 @Bot.on_message(filters.regex("Get Video 🍒"))
 async def on_get_video(client: Client, message: Message):
     user_id = message.from_user.id
-        
+
     if await db.ban_user_exist(user_id):
         return await message.reply_text(BAN_TXT, quote=True)
-        
-    
-    
+
+
+
     if not await is_subscribed(client, message):
         return await not_joined(client, message)
-        
+
     await get_video(client, message)
 
 
 @Bot.on_message(filters.regex("Get Photo 📸"))
 async def on_get_photo(client: Client, message: Message):
     user_id = message.from_user.id
-            
+
     if await db.ban_user_exist(user_id):
         return await message.reply_text(BAN_TXT, quote=True)
-        
-    
-    
+
+
+
     if not await is_subscribed(client, message):
         return await not_joined(client, message)
-        
+
     await get_photo(client, message)
 
 
 @Bot.on_message(filters.regex("Get Batch 📦"))
 async def on_get_batch(client: Client, message: Message):
     user_id = message.from_user.id
-            
+
     if await db.ban_user_exist(user_id):
         return await message.reply_text(BAN_TXT, quote=True)
-        
-    
-    
+
+
+
     if not await is_subscribed(client, message):
         return await not_joined(client, message)
     await get_batch(client, message)
@@ -819,12 +819,12 @@ async def send_random_video(client: Client, chat_id, protect=True, caption="", r
 
     if vids:
         random_video = random.choice(vids)
-        
+
         final_caption = "" if hide_caption else (caption if caption else None)
         try:
             sent_msg = await client.send_video(
-                chat_id, 
-                random_video["file_id"], 
+                chat_id,
+                random_video["file_id"],
                 caption=final_caption,
                 parse_mode=ParseMode.HTML if final_caption else None,
                 reply_markup=reply_markup,
@@ -834,8 +834,8 @@ async def send_random_video(client: Client, chat_id, protect=True, caption="", r
         except FloodWait as e:
             await asyncio.sleep(e.x)
             sent_msg = await client.send_video(
-                chat_id, 
-                random_video["file_id"], 
+                chat_id,
+                random_video["file_id"],
                 caption=final_caption,
                 parse_mode=ParseMode.HTML if final_caption else None,
                 reply_markup=reply_markup,
@@ -849,12 +849,12 @@ async def send_random_video(client: Client, chat_id, protect=True, caption="", r
 
 
 async def store_photos(app: Client):
-    
+
     batch_size = 100
     all_photos = []
     full, part = divmod(len(VIDEOS_RANGE), batch_size)
 
-    
+
     for i in range(full):
         try:
             batch_ids = VIDEOS_RANGE[i * batch_size: (i + 1) * batch_size]
@@ -867,16 +867,16 @@ async def store_photos(app: Client):
                     exists = await db.photo_exists(file_id)
                     if not exists:
                         all_photos.append({"file_id": file_id})
-            
-            
-            if i < full - 1:  
-                await asyncio.sleep(1)  
+
+
+            if i < full - 1:
+                await asyncio.sleep(1)
         except Exception as e:
             logging.error(f"Error fetching photos batch {i}: {e}")
-            await asyncio.sleep(2)  
+            await asyncio.sleep(2)
             continue
 
-    
+
     if part > 0:
         try:
             remaining_ids = VIDEOS_RANGE[full * batch_size:]
@@ -903,22 +903,22 @@ async def store_photos(app: Client):
 
 async def send_random_photo(client: Client, chat_id, protect=True, caption="", reply_markup=None, hide_caption=False):
     photos = await db.get_photos()
-    
+
     if not photos:
-        
+
         asyncio.create_task(store_photos(client))
-        
+
         await asyncio.sleep(2)
         photos = await db.get_photos()
 
     if photos:
-        
+
         final_caption = "" if hide_caption else (caption if caption else None)
         random_photo = random.choice(photos)
         try:
             sent_msg = await client.send_photo(
-                chat_id, 
-                random_photo["file_id"], 
+                chat_id,
+                random_photo["file_id"],
                 caption=final_caption,
                 parse_mode=ParseMode.HTML if final_caption else None,
                 reply_markup=reply_markup,
@@ -928,8 +928,8 @@ async def send_random_photo(client: Client, chat_id, protect=True, caption="", r
         except FloodWait as e:
             await asyncio.sleep(e.x)
             sent_msg = await client.send_photo(
-                chat_id, 
-                random_photo["file_id"], 
+                chat_id,
+                random_photo["file_id"],
                 caption=final_caption,
                 parse_mode=ParseMode.HTML if final_caption else None,
                 reply_markup=reply_markup,
@@ -949,10 +949,10 @@ async def get_photo(client: Client, message: Message):
     user_id = message.from_user.id
     current_time = datetime.now(ist)
 
-    
+
     is_allowed, remaining_time = await db.check_spam_limit(user_id, "get_photo", max_requests=5, time_window=60)
     if not is_allowed:
-        
+
         try:
             asyncio.create_task(schedule_spam_notification(client, user_id, "get_photo", remaining_time))
         except Exception:
@@ -963,15 +963,15 @@ async def get_photo(client: Client, message: Message):
             quote=True
         )
 
-    
+
     is_premium = await is_premium_user(user_id)
 
     if is_premium:
-        
+
         user_data = await collection.find_one({"user_id": user_id})
         expiration_timestamp = user_data.get("expiration_timestamp") if user_data else None
 
-        
+
         if expiration_timestamp:
             expiration_time = datetime.fromisoformat(expiration_timestamp).astimezone(ist)
             if current_time > expiration_time:
@@ -979,12 +979,12 @@ async def get_photo(client: Client, message: Message):
                     {"user_id": user_id},
                     {"$set": {"expiration_timestamp": None}}
                 )
-                
+
                 is_premium = False
 
         if is_premium:
-            
-            
+
+
             try:
                 AUTO_DEL, DEL_TIMER, HIDE_CAPTION, CHNL_BTN, PROTECT_MODE = await asyncio.gather(
                     db.get_auto_delete(),
@@ -997,16 +997,16 @@ async def get_photo(client: Client, message: Message):
                 logging.error(f"Error loading settings: {e}")
                 AUTO_DEL, DEL_TIMER, HIDE_CAPTION, CHNL_BTN, PROTECT_MODE = False, 0, False, None, False
 
-            
+
             custom_caption = await db.get_custom_caption()
             if not custom_caption:
                 from config import CUSTOM_CAPTION
                 custom_caption = CUSTOM_CAPTION
 
-            
+
             caption = custom_caption if custom_caption else ""
 
-            
+
             reply_markup = None
             if CHNL_BTN:
                 try:
@@ -1026,22 +1026,22 @@ async def get_photo(client: Client, message: Message):
 
             try:
                 sent_msg = await send_random_photo(
-                    client, 
-                    message.chat.id, 
+                    client,
+                    message.chat.id,
                     protect=PROTECT_MODE,
                     caption=caption,
                     reply_markup=reply_markup,
                     hide_caption=HIDE_CAPTION
                 )
                 if AUTO_DEL and sent_msg:
-                    
+
                     asyncio.create_task(auto_del_notification(client.username, sent_msg, DEL_TIMER, f"get_photo_{user_id}"))
                 return sent_msg
             except FloodWait as e:
                 await asyncio.sleep(e.x)
                 sent_msg = await send_random_photo(
-                    client, 
-                    message.chat.id, 
+                    client,
+                    message.chat.id,
                     protect=PROTECT_MODE,
                     caption=caption,
                     reply_markup=reply_markup,
@@ -1051,14 +1051,14 @@ async def get_photo(client: Client, message: Message):
                     asyncio.create_task(auto_del_notification(client.username, sent_msg, DEL_TIMER, f"get_photo_{user_id}"))
                 return sent_msg
 
-    
-    
+
+
     free_limit = await db.get_free_limit(user_id)
     free_enabled = await db.get_free_state(user_id)
     free_count = await db.check_free_usage(user_id)
 
     if not free_enabled:
-        
+
         buttons = [[InlineKeyboardButton("• ʙᴜʏ ᴘʀᴇᴍɪᴜᴍ •", callback_data="buy_prem")]]
         return await message.reply_text(
             "Yᴏᴜʀ ғʀᴇᴇ ᴘʟᴀɴ ɪs ᴅɪsᴀʙʟᴇᴅ. 🚫\n\nUɴʟᴏᴄᴋ ᴜɴʟɪᴍɪᴛᴇᴅ ᴀᴄᴄᴇss ᴡɪᴛʜ Pʀᴇᴍɪᴜᴍ!",
@@ -1070,7 +1070,7 @@ async def get_photo(client: Client, message: Message):
     remaining_attempts = free_limit - free_count
 
     if remaining_attempts <= 0:
-        
+
         try:
             VERIFY_EXPIRE = await db.get_verified_time()
         except Exception as e:
@@ -1078,14 +1078,14 @@ async def get_photo(client: Client, message: Message):
             VERIFY_EXPIRE = None
 
         if VERIFY_EXPIRE is not None:
-            
+
             try:
                 verify_status = await db.get_verify_status(user_id) or {}
             except Exception as e:
                 logging.error(f"Error fetching verify status for {user_id}: {e}")
                 verify_status = {"is_verified": False, "verified_time": 0, "verify_token": "", "link": ""}
 
-            
+
             try:
                 if verify_status.get("is_verified") and VERIFY_EXPIRE:
                     verified_time = verify_status.get("verified_time", 0)
@@ -1095,27 +1095,27 @@ async def get_photo(client: Client, message: Message):
             except Exception as e:
                 logging.error(f"Error while checking/refreshing verify expiry for {user_id}: {e}")
 
-            
+
             if not verify_status.get("is_verified", False):
                 try:
                     shortener_url = await db.get_shortener_url()
                     shortener_api = await db.get_shortener_api()
-                    
+
                     if shortener_url and shortener_api:
                         token = ''.join(random.choices(string.ascii_letters + string.digits, k=10))
                         await db.update_verify_status(user_id, verify_token=token, link="")
-                        
+
                         long_url = f"https://telegram.dog/{client.username}?start=verify_{token}"
                         short_link = await get_shortlink(long_url)
-                        
+
                         tut_vid_url = await db.get_tut_video() or TUT_VID
-                        
+
                         btn = [
                             [InlineKeyboardButton("Click here", url=short_link),
                              InlineKeyboardButton('How to use the bot', url=tut_vid_url)],
                             [InlineKeyboardButton('BUY PREMIUM', callback_data='buy_prem')]
                         ]
-                        
+
                         return await message.reply(
                             f"Your ads token is expired or invalid. Please verify to access the files.\n\n"
                             f"Token Timeout: {get_exp_time(VERIFY_EXPIRE)}\n\n"
@@ -1133,8 +1133,8 @@ async def get_photo(client: Client, message: Message):
                         protect_content=False,
                         quote=True
                     )
-        
-        
+
+
         buttons = [[InlineKeyboardButton("• ʙᴜʏ ᴘʀᴇᴍɪᴜᴍ •", callback_data="buy_prem")]]
         return await message.reply_text(
             f"Yᴏᴜ'ᴠᴇ ᴜsᴇᴅ ᴀʟʟ ʏᴏᴜʀ {free_limit} ғʀᴇᴇ ᴘʜᴏᴛᴏs ғᴏʀ ᴛᴏᴅᴀʏ. 📸\n\nUᴘɢʀᴀᴅᴇ ᴛᴏ Pʀᴇᴍɪᴜᴍ ғᴏʀ ᴜɴʟɪᴍɪᴛᴇᴅ ᴀᴄᴄᴇss!",
@@ -1144,7 +1144,7 @@ async def get_photo(client: Client, message: Message):
         )
 
     if remaining_attempts == 1:
-        
+
         await message.reply_text(
             "⚠️ Tʜɪs ɪs ʏᴏᴜʀ ʟᴀsᴛ ғʀᴇᴇ ᴘʜᴏᴛᴏ ғᴏʀ ᴛᴏᴅᴀʏ.\n\nUᴘɢʀᴀᴅᴇ ᴛᴏ Pʀᴇᴍɪᴜᴍ ғᴏʀ ᴜɴʟɪᴍɪᴛᴇᴅ ᴘʜᴏᴛᴏs!",
             reply_markup=InlineKeyboardMarkup(
@@ -1154,7 +1154,7 @@ async def get_photo(client: Client, message: Message):
             quote=True
         )
 
-    
+
     try:
         AUTO_DEL, DEL_TIMER, HIDE_CAPTION, CHNL_BTN, PROTECT_MODE = await asyncio.gather(
             db.get_auto_delete(),
@@ -1167,16 +1167,16 @@ async def get_photo(client: Client, message: Message):
         logging.error(f"Error loading settings: {e}")
         AUTO_DEL, DEL_TIMER, HIDE_CAPTION, CHNL_BTN, PROTECT_MODE = False, 0, False, None, True
 
-    
+
     custom_caption = await db.get_custom_caption()
     if not custom_caption:
         from config import CUSTOM_CAPTION
         custom_caption = CUSTOM_CAPTION
 
-    
+
     caption = custom_caption if custom_caption else ""
 
-    
+
     reply_markup = None
     if CHNL_BTN:
         try:
@@ -1186,12 +1186,12 @@ async def get_photo(client: Client, message: Message):
         except Exception:
             pass
 
-    
+
     await db.update_free_usage(user_id)
     try:
         sent_msg = await send_random_photo(
-            client, 
-            message.chat.id, 
+            client,
+            message.chat.id,
             protect=PROTECT_MODE,
             caption=caption,
             reply_markup=reply_markup,
@@ -1202,8 +1202,8 @@ async def get_photo(client: Client, message: Message):
     except FloodWait as e:
         await asyncio.sleep(e.x)
         sent_msg = await send_random_photo(
-            client, 
-            message.chat.id, 
+            client,
+            message.chat.id,
             protect=PROTECT_MODE,
             caption=caption,
             reply_markup=reply_markup,
@@ -1221,7 +1221,7 @@ async def get_batch(client: Client, message: Message):
     user_id = message.from_user.id
     current_time = datetime.now(ist)
 
-    
+
     is_allowed, remaining_time = await db.check_spam_limit(user_id, "get_batch", max_requests=3, time_window=120)
     if not is_allowed:
         try:
@@ -1234,15 +1234,15 @@ async def get_batch(client: Client, message: Message):
             quote=True
         )
 
-    
+
     is_premium = await is_premium_user(user_id)
 
     if is_premium:
-        
+
         user_data = await collection.find_one({"user_id": user_id})
         expiration_timestamp = user_data.get("expiration_timestamp") if user_data else None
 
-        
+
         if expiration_timestamp:
             expiration_time = datetime.fromisoformat(expiration_timestamp).astimezone(ist)
             if current_time > expiration_time:
@@ -1250,12 +1250,12 @@ async def get_batch(client: Client, message: Message):
                     {"user_id": user_id},
                     {"$set": {"expiration_timestamp": None}}
                 )
-                
+
                 is_premium = False
 
         if is_premium:
-            
-            
+
+
             try:
                 AUTO_DEL, DEL_TIMER, HIDE_CAPTION, CHNL_BTN, PROTECT_MODE = await asyncio.gather(
                     db.get_auto_delete(),
@@ -1268,7 +1268,7 @@ async def get_batch(client: Client, message: Message):
                 logging.error(f"Error loading settings: {e}")
                 AUTO_DEL, DEL_TIMER, HIDE_CAPTION, CHNL_BTN, PROTECT_MODE = False, 0, False, None, False
 
-            
+
             custom_caption = await db.get_custom_caption()
             if not custom_caption:
                 from config import CUSTOM_CAPTION
@@ -1276,14 +1276,14 @@ async def get_batch(client: Client, message: Message):
 
             try:
                 sent_msgs = await send_batch_media(
-                    client, 
-                    message.chat.id, 
+                    client,
+                    message.chat.id,
                     protect=PROTECT_MODE,
                     caption=custom_caption if custom_caption and not HIDE_CAPTION else None,
                     hide_caption=HIDE_CAPTION
                 )
                 if AUTO_DEL and sent_msgs:
-                    
+
                     if isinstance(sent_msgs, list) and len(sent_msgs) > 0:
                         last_msg = sent_msgs[-1]
                         asyncio.create_task(auto_del_notification(client.username, last_msg, DEL_TIMER, f"get_batch_{user_id}", is_batch=True, all_messages=sent_msgs))
@@ -1293,14 +1293,14 @@ async def get_batch(client: Client, message: Message):
             except FloodWait as e:
                 await asyncio.sleep(e.x)
                 sent_msgs = await send_batch_media(
-                    client, 
-                    message.chat.id, 
+                    client,
+                    message.chat.id,
                     protect=PROTECT_MODE,
                     caption=custom_caption if custom_caption and not HIDE_CAPTION else None,
                     hide_caption=HIDE_CAPTION
                 )
                 if AUTO_DEL and sent_msgs:
-                    
+
                     if isinstance(sent_msgs, list) and len(sent_msgs) > 0:
                         last_msg = sent_msgs[-1]
                         asyncio.create_task(auto_del_notification(client.username, last_msg, DEL_TIMER, f"get_batch_{user_id}", is_batch=True, all_messages=sent_msgs))
@@ -1308,14 +1308,14 @@ async def get_batch(client: Client, message: Message):
                         asyncio.create_task(auto_del_notification(client.username, sent_msgs, DEL_TIMER, f"get_batch_{user_id}"))
                 return sent_msgs
 
-    
-    
+
+
     free_limit = await db.get_free_limit(user_id)
     free_enabled = await db.get_free_state(user_id)
     free_count = await db.check_free_usage(user_id)
 
     if not free_enabled:
-        
+
         buttons = [[InlineKeyboardButton("• ʙᴜʏ ᴘʀᴇᴍɪᴜᴍ •", callback_data="buy_prem")]]
         return await message.reply_text(
             "Yᴏᴜʀ ғʀᴇᴇ ᴘʟᴀɴ ɪs ᴅɪsᴀʙʟᴇᴅ. 🚫\n\nUɴʟᴏᴄᴋ ᴜɴʟɪᴍɪᴛᴇᴅ ᴀᴄᴄᴇss ᴡɪᴛʜ Pʀᴇᴍɪᴜᴍ!",
@@ -1327,7 +1327,7 @@ async def get_batch(client: Client, message: Message):
     remaining_attempts = free_limit - free_count
 
     if remaining_attempts <= 0:
-        
+
         try:
             VERIFY_EXPIRE = await db.get_verified_time()
         except Exception as e:
@@ -1335,14 +1335,14 @@ async def get_batch(client: Client, message: Message):
             VERIFY_EXPIRE = None
 
         if VERIFY_EXPIRE is not None:
-            
+
             try:
                 verify_status = await db.get_verify_status(user_id) or {}
             except Exception as e:
                 logging.error(f"Error fetching verify status for {user_id}: {e}")
                 verify_status = {"is_verified": False, "verified_time": 0, "verify_token": "", "link": ""}
 
-            
+
             try:
                 if verify_status.get("is_verified") and VERIFY_EXPIRE:
                     verified_time = verify_status.get("verified_time", 0)
@@ -1352,27 +1352,27 @@ async def get_batch(client: Client, message: Message):
             except Exception as e:
                 logging.error(f"Error while checking/refreshing verify expiry for {user_id}: {e}")
 
-            
+
             if not verify_status.get("is_verified", False):
                 try:
                     shortener_url = await db.get_shortener_url()
                     shortener_api = await db.get_shortener_api()
-                    
+
                     if shortener_url and shortener_api:
                         token = ''.join(random.choices(string.ascii_letters + string.digits, k=10))
                         await db.update_verify_status(user_id, verify_token=token, link="")
-                        
+
                         long_url = f"https://telegram.dog/{client.username}?start=verify_{token}"
                         short_link = await get_shortlink(long_url)
-                        
+
                         tut_vid_url = await db.get_tut_video() or TUT_VID
-                        
+
                         btn = [
                             [InlineKeyboardButton("Click here", url=short_link),
                              InlineKeyboardButton('How to use the bot', url=tut_vid_url)],
                             [InlineKeyboardButton('BUY PREMIUM', callback_data='buy_prem')]
                         ]
-                        
+
                         return await message.reply(
                             f"Your ads token is expired or invalid. Please verify to access the files.\n\n"
                             f"Token Timeout: {get_exp_time(VERIFY_EXPIRE)}\n\n"
@@ -1390,8 +1390,8 @@ async def get_batch(client: Client, message: Message):
                         protect_content=False,
                         quote=True
                     )
-        
-        
+
+
         buttons = [[InlineKeyboardButton("• ʙᴜʏ ᴘʀᴇᴍɪᴜᴍ •", callback_data="buy_prem")]]
         return await message.reply_text(
             f"Yᴏᴜ'ᴠᴇ ᴜsᴇᴅ ᴀʟʟ ʏᴏᴜʀ {free_limit} ғʀᴇᴇ ʙᴀᴛᴄʜᴇs ғᴏʀ ᴛᴏᴅᴀʏ. 📦\n\nUᴘɢʀᴀᴅᴇ ᴛᴏ Pʀᴇᴍɪᴜᴍ ғᴏʀ ᴜɴʟɪᴍɪᴛᴇᴅ ᴀᴄᴄᴇss!",
@@ -1401,7 +1401,7 @@ async def get_batch(client: Client, message: Message):
         )
 
     if remaining_attempts == 1:
-        
+
         await message.reply_text(
             "⚠️ Tʜɪs ɪs ʏᴏᴜʀ ʟᴀsᴛ ғʀᴇᴇ ʙᴀᴛᴄʜ ғᴏʀ ᴛᴏᴅᴀʏ.\n\nUᴘɢʀᴀᴅᴇ ᴛᴏ Pʀᴇᴍɪᴜᴍ ғᴏʀ ᴜɴʟɪᴍɪᴛᴇᴅ ʙᴀᴛᴄʜᴇs!",
             reply_markup=InlineKeyboardMarkup(
@@ -1411,7 +1411,7 @@ async def get_batch(client: Client, message: Message):
             quote=True
         )
 
-    
+
     try:
         AUTO_DEL, DEL_TIMER, HIDE_CAPTION, CHNL_BTN, PROTECT_MODE = await asyncio.gather(
             db.get_auto_delete(),
@@ -1424,18 +1424,18 @@ async def get_batch(client: Client, message: Message):
         logging.error(f"Error loading settings: {e}")
         AUTO_DEL, DEL_TIMER, HIDE_CAPTION, CHNL_BTN, PROTECT_MODE = False, 0, False, None, True
 
-    
+
     custom_caption = await db.get_custom_caption()
     if not custom_caption:
         from config import CUSTOM_CAPTION
         custom_caption = CUSTOM_CAPTION
 
-    
+
     await db.update_free_usage(user_id)
     try:
         sent_msgs = await send_batch_media(
-            client, 
-            message.chat.id, 
+            client,
+            message.chat.id,
             protect=PROTECT_MODE,
             caption=custom_caption if custom_caption and not HIDE_CAPTION else None,
             hide_caption=HIDE_CAPTION
@@ -1447,8 +1447,8 @@ async def get_batch(client: Client, message: Message):
     except FloodWait as e:
         await asyncio.sleep(e.x)
         sent_msgs = await send_batch_media(
-            client, 
-            message.chat.id, 
+            client,
+            message.chat.id,
             protect=PROTECT_MODE,
             caption=custom_caption if custom_caption and not HIDE_CAPTION else None,
             hide_caption=HIDE_CAPTION
@@ -1461,30 +1461,30 @@ async def get_batch(client: Client, message: Message):
 
 
 async def send_batch_media(client: Client, chat_id, protect=True, caption=None, hide_caption=False):
-    
+
     photos = await db.get_photos()
     videos = await db.get_videos()
-    
-    
+
+
     if not photos:
         asyncio.create_task(store_photos(client))
-        await asyncio.sleep(1)  
+        await asyncio.sleep(1)
         photos = await db.get_photos()
-    
+
     if not videos:
         asyncio.create_task(store_videos(client))
-        await asyncio.sleep(1)  
+        await asyncio.sleep(1)
         videos = await db.get_videos()
 
     if not photos and not videos:
         await client.send_message(chat_id, "No media available right now.")
         return None
 
-    
+
     media_group = []
     total_needed = 10
-    
-    
+
+
     all_media = []
     if photos:
         for photo in photos:
@@ -1492,16 +1492,16 @@ async def send_batch_media(client: Client, chat_id, protect=True, caption=None, 
     if videos:
         for video in videos:
             all_media.append(("video", video["file_id"]))
-    
+
     if not all_media:
         await client.send_message(chat_id, "No media available right now.")
         return None
-    
-    
+
+
     random.shuffle(all_media)
     selected = all_media[:min(total_needed, len(all_media))]
-    
-    
+
+
     for idx, (media_type, file_id) in enumerate(selected):
         if media_type == "photo":
             if idx == 0 and caption and not hide_caption:
@@ -1513,7 +1513,7 @@ async def send_batch_media(client: Client, chat_id, protect=True, caption=None, 
                 media_group.append(InputMediaVideo(file_id, caption=caption, parse_mode=ParseMode.HTML))
             else:
                 media_group.append(InputMediaVideo(file_id))
-    
+
     if media_group:
         try:
             sent_msgs = await client.send_media_group(chat_id, media_group, protect_content=protect)
@@ -1546,7 +1546,7 @@ async def get_video(client: Client, message: Message):
     user_id = message.from_user.id
     current_time = datetime.now(ist)
 
-    
+
     is_allowed, remaining_time = await db.check_spam_limit(user_id, "get_video", max_requests=5, time_window=60)
     if not is_allowed:
         try:
@@ -1559,15 +1559,15 @@ async def get_video(client: Client, message: Message):
             quote=True
         )
 
-    
+
     is_premium = await is_premium_user(user_id)
 
     if is_premium:
-        
+
         user_data = await collection.find_one({"user_id": user_id})
         expiration_timestamp = user_data.get("expiration_timestamp") if user_data else None
 
-        
+
         if expiration_timestamp:
             expiration_time = datetime.fromisoformat(expiration_timestamp).astimezone(ist)
             if current_time > expiration_time:
@@ -1575,12 +1575,12 @@ async def get_video(client: Client, message: Message):
                     {"user_id": user_id},
                     {"$set": {"expiration_timestamp": None}}
                 )
-                
+
                 is_premium = False
 
         if is_premium:
-            
-            
+
+
             try:
                 AUTO_DEL, DEL_TIMER, HIDE_CAPTION, CHNL_BTN, PROTECT_MODE = await asyncio.gather(
                     db.get_auto_delete(),
@@ -1593,16 +1593,16 @@ async def get_video(client: Client, message: Message):
                 logging.error(f"Error loading settings: {e}")
                 AUTO_DEL, DEL_TIMER, HIDE_CAPTION, CHNL_BTN, PROTECT_MODE = False, 0, False, None, False
 
-            
+
             custom_caption = await db.get_custom_caption()
             if not custom_caption:
                 from config import CUSTOM_CAPTION
                 custom_caption = CUSTOM_CAPTION
 
-            
+
             caption = custom_caption if custom_caption else ""
 
-            
+
             reply_markup = None
             if CHNL_BTN:
                 try:
@@ -1622,8 +1622,8 @@ async def get_video(client: Client, message: Message):
 
             try:
                 sent_msg = await send_random_video(
-                    client, 
-                    message.chat.id, 
+                    client,
+                    message.chat.id,
                     protect=PROTECT_MODE,
                     caption=caption,
                     reply_markup=reply_markup,
@@ -1635,8 +1635,8 @@ async def get_video(client: Client, message: Message):
             except FloodWait as e:
                 await asyncio.sleep(e.x)
                 sent_msg = await send_random_video(
-                    client, 
-                    message.chat.id, 
+                    client,
+                    message.chat.id,
                     protect=PROTECT_MODE,
                     caption=caption,
                     reply_markup=reply_markup,
@@ -1646,14 +1646,14 @@ async def get_video(client: Client, message: Message):
                     asyncio.create_task(auto_del_notification(client.username, sent_msg, DEL_TIMER, f"get_video_{user_id}"))
                 return sent_msg
 
-    
-    
+
+
     free_limit = await db.get_free_limit(user_id)
     free_enabled = await db.get_free_state(user_id)
     free_count = await db.check_free_usage(user_id)
 
     if not free_enabled:
-        
+
         buttons = [[InlineKeyboardButton("• ʙᴜʏ ᴘʀᴇᴍɪᴜᴍ •", callback_data="buy_prem")]]
         return await message.reply_text(
             "Yᴏᴜʀ ғʀᴇᴇ ᴘʟᴀɴ ɪs ᴅɪsᴀʙʟᴇᴅ. 🚫\n\nUɴʟᴏᴄᴋ ᴜɴʟɪᴍɪᴛᴇᴅ ᴀᴄᴄᴇss ᴡɪᴛʜ Pʀᴇᴍɪᴜᴍ!",
@@ -1665,7 +1665,7 @@ async def get_video(client: Client, message: Message):
     remaining_attempts = free_limit - free_count
 
     if remaining_attempts <= 0:
-        
+
         try:
             VERIFY_EXPIRE = await db.get_verified_time()
         except Exception as e:
@@ -1673,14 +1673,14 @@ async def get_video(client: Client, message: Message):
             VERIFY_EXPIRE = None
 
         if VERIFY_EXPIRE is not None:
-            
+
             try:
                 verify_status = await db.get_verify_status(user_id) or {}
             except Exception as e:
                 logging.error(f"Error fetching verify status for {user_id}: {e}")
                 verify_status = {"is_verified": False, "verified_time": 0, "verify_token": "", "link": ""}
 
-            
+
             try:
                 if verify_status.get("is_verified") and VERIFY_EXPIRE:
                     verified_time = verify_status.get("verified_time", 0)
@@ -1690,27 +1690,27 @@ async def get_video(client: Client, message: Message):
             except Exception as e:
                 logging.error(f"Error while checking/refreshing verify expiry for {user_id}: {e}")
 
-            
+
             if not verify_status.get("is_verified", False):
                 try:
                     shortener_url = await db.get_shortener_url()
                     shortener_api = await db.get_shortener_api()
-                    
+
                     if shortener_url and shortener_api:
                         token = ''.join(random.choices(string.ascii_letters + string.digits, k=10))
                         await db.update_verify_status(user_id, verify_token=token, link="")
-                        
+
                         long_url = f"https://telegram.dog/{client.username}?start=verify_{token}"
                         short_link = await get_shortlink(long_url)
-                        
+
                         tut_vid_url = await db.get_tut_video() or TUT_VID
-                        
+
                         btn = [
                             [InlineKeyboardButton("Click here", url=short_link),
                              InlineKeyboardButton('How to use the bot', url=tut_vid_url)],
                             [InlineKeyboardButton('BUY PREMIUM', callback_data='buy_prem')]
                         ]
-                        
+
                         return await message.reply(
                             f"Your ads token is expired or invalid. Please verify to access the files.\n\n"
                             f"Token Timeout: {get_exp_time(VERIFY_EXPIRE)}\n\n"
@@ -1728,8 +1728,8 @@ async def get_video(client: Client, message: Message):
                         protect_content=False,
                         quote=True
                     )
-        
-        
+
+
         buttons = [[InlineKeyboardButton("• ʙᴜʏ ᴘʀᴇᴍɪᴜᴍ •", callback_data="buy_prem")]]
         return await message.reply_text(
             f"Yᴏᴜ'ᴠᴇ ᴜsᴇᴅ ᴀʟʟ ʏᴏᴜʀ {free_limit} ғʀᴇᴇ ᴠɪᴅᴇᴏs ғᴏʀ ᴛᴏᴅᴀʏ. 🍒\n\nUᴘɢʀᴀᴅᴇ ᴛᴏ Pʀᴇᴍɪᴜᴍ ғᴏʀ ᴜɴʟɪᴍɪᴛᴇᴅ ᴀᴄᴄᴇss!",
@@ -1739,7 +1739,7 @@ async def get_video(client: Client, message: Message):
         )
 
     if remaining_attempts == 1:
-        
+
         await message.reply_text(
             "⚠️ Tʜɪs ɪs ʏᴏᴜʀ ʟᴀsᴛ ғʀᴇᴇ ᴠɪᴅᴇᴏ ғᴏʀ ᴛᴏᴅᴀʏ.\n\nUᴘɢʀᴀᴅᴇ ᴛᴏ Pʀᴇᴍɪᴜᴍ ғᴏʀ ᴜɴʟɪᴍɪᴛᴇᴅ ᴠɪᴅᴇᴏs!",
             reply_markup=InlineKeyboardMarkup(
@@ -1749,7 +1749,7 @@ async def get_video(client: Client, message: Message):
             quote=True
         )
 
-    
+
     try:
         AUTO_DEL, DEL_TIMER, HIDE_CAPTION, CHNL_BTN, PROTECT_MODE = await asyncio.gather(
             db.get_auto_delete(),
@@ -1762,16 +1762,16 @@ async def get_video(client: Client, message: Message):
         logging.error(f"Error loading settings: {e}")
         AUTO_DEL, DEL_TIMER, HIDE_CAPTION, CHNL_BTN, PROTECT_MODE = False, 0, False, None, True
 
-    
+
     custom_caption = await db.get_custom_caption()
     if not custom_caption:
         from config import CUSTOM_CAPTION
         custom_caption = CUSTOM_CAPTION
 
-    
+
     caption = custom_caption if custom_caption else ""
 
-    
+
     reply_markup = None
     if CHNL_BTN:
         try:
@@ -1781,12 +1781,12 @@ async def get_video(client: Client, message: Message):
         except Exception:
             pass
 
-    
+
     await db.update_free_usage(user_id)
     try:
         sent_msg = await send_random_video(
-            client, 
-            message.chat.id, 
+            client,
+            message.chat.id,
             protect=PROTECT_MODE,
             caption=caption,
             reply_markup=reply_markup,
@@ -1797,8 +1797,8 @@ async def get_video(client: Client, message: Message):
     except FloodWait as e:
         await asyncio.sleep(e.x)
         sent_msg = await send_random_video(
-            client, 
-            message.chat.id, 
+            client,
+            message.chat.id,
             protect=PROTECT_MODE,
             caption=caption,
             reply_markup=reply_markup,
@@ -1822,7 +1822,7 @@ chat_data_cache = {}
 async def schedule_spam_notification(client: Client, user_id: int, action_type: str, wait_time: int):
     """Schedule a single notification to be sent to the user when rate-limit expires."""
     try:
-        
+
         if await db.get_spam_notify_flag(user_id, action_type):
             return
         await db.set_spam_notify_flag(user_id, action_type)
@@ -1831,9 +1831,9 @@ async def schedule_spam_notification(client: Client, user_id: int, action_type: 
             try:
                 await asyncio.sleep(wait_time)
 
-                
+
                 if await db.get_spam_notify_flag(user_id, action_type):
-                    
+
                     await db.reset_spam_protection(user_id, action_type)
                     try:
                         await client.send_message(user_id, f"✅ You can now request {action_type.replace('_',' ')} again.")
@@ -1850,59 +1850,57 @@ async def schedule_spam_notification(client: Client, user_id: int, action_type: 
         logging.error(f"Failed to schedule spam notification: {e}")
 
 async def not_joined(client: Client, message: Message):
-    temp = await message.reply(f"<b>??</b>")
+    if not client.fsub_dict:
+        return
+
+    temp = await message.reply("<code><b>ᴡᴀɪᴛ ᴀ sᴇᴄᴏɴᴅ.....</b></code>")
 
     user_id = message.from_user.id
+    statuses = await check_subscription(client, user_id)
 
-    REQFSUB = await db.get_request_forcesub()
     buttons = []
-    count = 0
+
+    for channel_id, (channel_name, channel_link, request, timer) in client.fsub_dict.items():
+        status = statuses.get(channel_id, None)
+
+        if timer > 0:
+            expire_time = datetime.now() + timedelta(minutes=timer)
+            try:
+                invite = await client.create_chat_invite_link(
+                    chat_id=channel_id,
+                    expire_date=expire_time,
+                    creates_join_request=request
+                )
+                channel_link = invite.invite_link
+            except Exception as e:
+                client.LOGGER(__name__, client.name).warning(f"Error creating invite link for {channel_name}: {e}")
+
+        if status not in {ChatMemberStatus.MEMBER, ChatMemberStatus.ADMINISTRATOR, ChatMemberStatus.OWNER}:
+            button_text = channel_name
+            if request:
+                try:
+                    if await client.mongodb.has_submitted_join_request(user_id, channel_id):
+                        request_status = await client.mongodb.get_join_request_status(user_id, channel_id)
+                        if request_status == "pending":
+                            continue
+                except Exception:
+                    pass
+            buttons.append([InlineKeyboardButton(text=button_text, url=channel_link)])
 
     try:
-        for total, chat_id in enumerate(await db.get_all_channels(), start=1):
-            await message.reply_chat_action(ChatAction.PLAYING)
-
-            
-            if not await is_userJoin(client, user_id, chat_id):
-                try:
-                    
-                    if chat_id in chat_data_cache:
-                        data = chat_data_cache[chat_id]  
-                    else:
-                        data = await client.get_chat(chat_id)  
-                        chat_data_cache[chat_id] = data  
-
-                    cname = data.title
-
-                    
-                    if REQFSUB and not data.username: 
-                        link = await db.get_stored_reqLink(chat_id)
-                        await db.add_reqChannel(chat_id)
-
-                        if not link:
-                            link = (await client.create_chat_invite_link(chat_id=chat_id, creates_join_request=True)).invite_link
-                            await db.store_reqLink(chat_id, link)
-                    else:
-                        link = data.invite_link
-
-                    
-                    buttons.append([InlineKeyboardButton(text=cname, url=link)])
-                    count += 1
-                    await temp.edit(f"<b>{'! ' * count}</b>")
-
-                except Exception as e:
-                    print(f"Can't Export Channel Name and Link..., Please Check If the Bot is admin in the FORCE SUB CHANNELS:\nProvided Force sub Channel:- {chat_id}")
-                    return await temp.edit(f"<b><i>! Eʀʀᴏʀ, Cᴏɴᴛᴀᴄᴛ ᴅᴇᴠᴇʟᴏᴘᴇʀ ᴛᴏ sᴏʟᴠᴇ ᴛʜᴇ ɪssᴜᴇs @rohit_1888</i></b>\n<blockquote expandable><b>Rᴇᴀsᴏɴ:</b> {e}</blockquote>")
-
-        
-        try:
+        from_link = message.text.split(" ")
+        if len(from_link) > 1:
+            try_again_link = f"https://t.me/{client.username}/?start={from_link[1]}"
+            buttons.append([InlineKeyboardButton("🔄 Try Again", url=try_again_link)])
+        else:
             buttons.append([
-                InlineKeyboardButton(text="Get Batch 📦", callback_data=f"get_again_get_batch_{user_id}"),
+                InlineKeyboardButton(text="🔄 Try Again", callback_data=f"get_again_get_batch_{user_id}"),
                 InlineKeyboardButton(text="Close ✖️", callback_data="close")
             ])
-        except Exception:
-            pass
+    except Exception:
+        pass
 
+    try:
         await message.reply_photo(
             photo=FORCE_PIC,
             caption=FORCE_MSG.format(
@@ -1914,10 +1912,10 @@ async def not_joined(client: Client, message: Message):
             ),
             reply_markup=InlineKeyboardMarkup(buttons),
         )
+        await temp.delete()
 
     except Exception as e:
-        print(f"Error: {e}")  
-        
+        print(f"Error: {e}")
         await temp.edit(f"<b><i>! Eʀʀᴏʀ, Cᴏɴᴛᴀᴄᴛ ᴅᴇᴠᴇʟᴏᴘᴇʀ ᴛᴏ sᴏʟᴠᴇ ᴛʜᴇ ɪssᴜᴇs @rohit_1888</i></b>\n<blockquote expandable><b>Rᴇᴀsᴏɴ:</b> {e}</blockquote>")
 
 
@@ -1929,29 +1927,29 @@ async def get_users(client: Bot, message: Message):
 
 
 @Bot.on_message(filters.command('status') & filters.private & is_admin)
-async def info(client: Bot, message: Message):   
+async def info(client: Bot, message: Message):
     reply_markup = InlineKeyboardMarkup(
         [[InlineKeyboardButton("• Close •", callback_data="close")]]
     )
 
-    
+
     start_time = time.time()
     temp_msg = await message.reply(
-        "<b><i>Processing...</i></b>", 
-        quote=True, 
+        "<b><i>Processing...</i></b>",
+        quote=True,
         parse_mode=ParseMode.HTML
     )
     end_time = time.time()
     ping_time = (end_time - start_time) * 1000
 
-    
+
     users = await db.full_userbase()
 
-    
+
     try:
         ist = timezone("Asia/Kolkata")
         now = datetime.now(ist)
-        
+
         if hasattr(client, 'uptime') and client.uptime:
             uptime = client.uptime
             if uptime.tzinfo is None:
@@ -1964,7 +1962,7 @@ async def info(client: Bot, message: Message):
         logging.error(f"Error calculating uptime: {e}")
         bottime = "N/A"
 
-    
+
     await temp_msg.edit(
         f"<b>Users: {len(users)}\n\n"
         f"Uptime: {bottime}\n\n"
@@ -2002,7 +2000,7 @@ async def broadcast(client: Bot, message: Message):
         await asyncio.sleep(8)
         return await msg.delete()
 
-    
+
     do_pin = False
     do_delete = False
     duration = 0
@@ -2033,7 +2031,7 @@ async def broadcast(client: Bot, message: Message):
     if not mode_text:
         mode_text.append("NORMAL")
 
-    
+
     async with cancel_lock:
         is_canceled = False
 
@@ -2047,7 +2045,7 @@ async def broadcast(client: Bot, message: Message):
     bar_length = 20
     progress_bar = ''
     last_update_percentage = 0
-    update_interval = 0.05  
+    update_interval = 0.05
 
     for i, chat_id in enumerate(query, start=1):
         async with cancel_lock:
@@ -2085,7 +2083,7 @@ async def broadcast(client: Bot, message: Message):
             unsuccessful += 1
             await db.del_user(chat_id)
 
-        
+
         percent_complete = i / total
         if percent_complete - last_update_percentage >= update_interval or last_update_percentage == 0:
             num_blocks = int(percent_complete * bar_length)
@@ -2104,7 +2102,7 @@ async def broadcast(client: Bot, message: Message):
             await pls_wait.edit(status_update)
             last_update_percentage = percent_complete
 
-    
+
     final_status = f"""<b>›› BROADCAST ({' + '.join(mode_text)}) COMPLETED ✅
 
 <blockquote>Dᴏɴᴇ:</b> [{progress_bar}] {percent_complete:.0%}</blockquote>
@@ -2137,18 +2135,18 @@ async def add_premium_user_command(client, msg):
     try:
         user_id = int(msg.command[1])
         time_value = int(msg.command[2])
-        time_unit = msg.command[3].lower()  
+        time_unit = msg.command[3].lower()
 
-        
+
         expiration_time = await add_premium(user_id, time_value, time_unit)
 
-        
+
         await msg.reply_text(
             f"User {user_id} added as a premium user for {time_value} {time_unit}.\n"
             f"Expiration Time: {expiration_time}"
         )
 
-        
+
         await client.send_message(
             chat_id=user_id,
             text=(
@@ -2181,35 +2179,35 @@ async def pre_remove_user(client: Client, msg: Message):
 
 @Bot.on_message(filters.command('listpaid') & filters.private & is_admin)
 async def list_premium_users_command(client, message):
-    
+
     ist = timezone("Asia/Kolkata")
 
-    
+
     premium_users_cursor = collection.find({})
     premium_user_list = ['<b>Active Premium Users in database:</b>']
-    current_time = datetime.now(ist)  
+    current_time = datetime.now(ist)
 
-    
+
     async for user in premium_users_cursor:
         user_id = user.get("user_id")
         expiration_timestamp = user.get("expiration_timestamp")
 
         if not expiration_timestamp:
-            
+
             await collection.delete_one({"user_id": user_id})
             continue
 
         try:
-            
+
             expiration_time = datetime.fromisoformat(str(expiration_timestamp)).astimezone(ist)
             remaining_time = expiration_time - current_time
 
             if remaining_time.total_seconds() <= 0:
-                
+
                 await collection.delete_one({"user_id": user_id})
                 continue
 
-            
+
             try:
                 user_info = await client.get_users(user_id)
                 username = f"@{user_info.username}" if user_info.username else "No Username"
@@ -2218,7 +2216,7 @@ async def list_premium_users_command(client, message):
                 username = "Unknown"
                 first_name = "Unknown"
 
-            
+
             days, hours, minutes, seconds = (
                 remaining_time.days,
                 remaining_time.seconds // 3600,
@@ -2227,7 +2225,7 @@ async def list_premium_users_command(client, message):
             )
             expiry_info = f"{days}d {hours}h {minutes}m {seconds}s left"
 
-            
+
             premium_user_list.append(
                 f"👤 <b>UserID:</b> <code>{user_id}</code>\n"
                 f"🔗 <b>User:</b> {username}\n"
@@ -2236,25 +2234,25 @@ async def list_premium_users_command(client, message):
             )
 
         except Exception as e:
-            
+
             premium_user_list.append(
                 f"⚠️ <b>UserID:</b> <code>{user_id}</code>\n"
                 f"Error: Unable to fetch details ({str(e)})"
             )
 
-    if len(premium_user_list) == 1:  
+    if len(premium_user_list) == 1:
         await message.reply_text("I found 0 active premium users in my DB")
     else:
         await message.reply_text("\n\n".join(premium_user_list), parse_mode=ParseMode.HTML)
 
 @Bot.on_message(filters.command('myplan') & filters.private)
 async def check_plan(client: Client, message: Message):
-    user_id = message.from_user.id  
+    user_id = message.from_user.id
 
-    
+
     status_message = await check_user_plan(user_id)
 
-    
+
     await message.reply(status_message)
 
 @Bot.on_message(filters.command('forcesub') & filters.private & ~banUser)
@@ -2267,11 +2265,11 @@ async def fsub_commands(client: Client, message: Message):
 async def help(client: Client, message: Message):
     buttons = [
         [
-            InlineKeyboardButton("🤖 Oᴡɴᴇʀ", url=f"tg://openmessage?user_id={OWNER_ID}"), 
+            InlineKeyboardButton("🤖 Oᴡɴᴇʀ", url=f"tg://openmessage?user_id={OWNER_ID}"),
             InlineKeyboardButton("🥰 Dᴇᴠᴇʟᴏᴘᴇʀ", url="https://t.me/rohit1888")
         ]
     ]
-    
+
     try:
         reply_markup = InlineKeyboardMarkup(buttons)
         await message.reply_photo(
@@ -2284,7 +2282,7 @@ async def help(client: Client, message: Message):
                 id = message.from_user.id
             ),
             reply_markup = reply_markup
-            
+
         )
     except Exception as e:
         return await message.reply(f"<b><i>! Eʀʀᴏʀ, Cᴏɴᴛᴀᴄᴛ ᴅᴇᴠᴇʟᴏᴘᴇʀ ᴛᴏ sᴏʟᴠᴇ ᴛʜᴇ ɪssᴜᴇs @rohit_1888</i></b>\n<blockquote expandable><b>Rᴇᴀsᴏɴ:</b> {e}</blockquote>")
@@ -2294,35 +2292,35 @@ async def shorten_link_command(client, message):
     id = message.from_user.id
 
     try:
-        
+
         set_msg = await client.ask(
             chat_id=id,
             text="<b><blockquote>⏳ Sᴇɴᴅ ᴀ ʟɪɴᴋ ᴛᴏ ʙᴇ sʜᴏʀᴛᴇɴᴇᴅ</blockquote>\n\nFᴏʀ ᴇxᴀᴍᴘʟᴇ: <code>https://example.com/long_url</code></b>",
             timeout=60
         )
 
-        
+
         original_url = set_msg.text.strip()
 
         if original_url.startswith("http") and "://" in original_url:
             try:
-                
+
                 short_link = await get_shortlink(original_url)
 
-                
+
                 await set_msg.reply(f"<b>🔗 Lɪɴᴋ Cᴏɴᴠᴇʀᴛᴇᴅ Sᴜᴄᴄᴇssғᴜʟʟʏ ✅</b>\n\n<blockquote>🔗 Sʜᴏʀᴛᴇɴᴇᴅ Lɪɴᴋ: <code>{short_link}</code></blockquote>")
             except ValueError as ve:
-                
+
                 await set_msg.reply(f"<b>❌ Error: {ve}</b>")
             except Exception as e:
-                
+
                 await set_msg.reply(f"<b>❌ Error while shortening the link:\n<code>{e}</code></b>")
         else:
-            
+
             await set_msg.reply("<b>❌ Invalid URL. Please send a valid link that starts with 'http'.</b>")
 
     except asyncio.TimeoutError:
-        
+
         await client.send_message(
             id,
             text="<b>⏳ Tɪᴍᴇᴏᴜᴛ. Yᴏᴜ ᴛᴏᴏᴋ ᴛᴏᴏ ʟᴏɴɢ ᴛᴏ ʀᴇsᴘᴏɴᴅ. Pʟᴇᴀsᴇ ᴛʀʏ ᴀɢᴀɪɴ.</b>",
@@ -2331,7 +2329,7 @@ async def shorten_link_command(client, message):
         print(f"! Timeout occurred for user ID {id} while processing '/shorten' command.")
 
     except Exception as e:
-        
+
         await client.send_message(
             id,
             text=f"<b>❌ Aɴ ᴇʀʀᴏʀ ᴏᴄᴄᴜʀʀᴇᴅ:\n<code>{e}</code></b>",
@@ -2354,20 +2352,20 @@ async def set_free_limit(client: Client, message: Message):
 async def toggle_freemode(client: Client, message: Message):
     await message.reply_chat_action(ChatAction.TYPING)
 
-    
+
     current_state = await db.get_free_state(message.from_user.id)
 
-    
+
     new_state = not current_state
     await db.set_free_state(message.from_user.id, new_state)
 
-    
+
     caption_button = InlineKeyboardButton(
-        text="✅ Free Enabled" if new_state else "❌ Free  Disabled", 
+        text="✅ Free Enabled" if new_state else "❌ Free  Disabled",
         callback_data="toggle_caption"
     )
 
-    
+
     await message.reply_text(
         f"Free Mode is now {'enabled' if new_state else 'disabled'}.",
         reply_markup=InlineKeyboardMarkup([
@@ -2402,21 +2400,21 @@ Free Usage Enabled: <code>{free_enabled}</code>"""
 @Bot.on_message(filters.command("referral") & filters.private)
 async def referral_command(client: Client, message: Message):
     user_id = message.from_user.id
-    
-    
+
+
     stats = await db.get_referral_stats(user_id)
     total_referrals = stats["total_referrals"]
-    
-    
+
+
     referral_link = f"https://telegram.dog/{client.username}?start=ref_{user_id}"
-    
-    
+
+
     remaining = max(0, REFERRAL_COUNT - total_referrals)
     progress_percent = min(100, (total_referrals / REFERRAL_COUNT) * 100) if REFERRAL_COUNT > 0 else 0
-    
-    
+
+
     is_premium = await is_premium_user(user_id)
-    
+
     status_message = f"""🎁 <b>Rᴇғᴇʀʀᴀʟ Sᴛᴀᴛs</b>
 
 📊 <b>Tᴏᴛᴀʟ Rᴇғᴇʀʀᴀʟs:</b> <code>{total_referrals}</code>
@@ -2424,7 +2422,7 @@ async def referral_command(client: Client, message: Message):
 📈 <b>Pʀᴏɢʀᴇss:</b> <code>{progress_percent:.1f}%</code>
 
 """
-    
+
     if total_referrals >= REFERRAL_COUNT:
         if is_premium:
             status_message += f"✅ <b>Yᴏᴜ'ᴠᴇ ᴇᴀʀɴᴇᴅ {REFERRAL_PREMIUM_DAYS} ᴅᴀʏs ᴏғ Pʀᴇᴍɪᴜᴍ!</b>\n\n"
@@ -2432,18 +2430,18 @@ async def referral_command(client: Client, message: Message):
             status_message += f"🎉 <b>Cᴏɴɢʀᴀᴛᴜʟᴀᴛɪᴏɴs! Yᴏᴜ'ᴠᴇ ᴇᴀʀɴᴇᴅ {REFERRAL_PREMIUM_DAYS} ᴅᴀʏs ᴏғ Pʀᴇᴍɪᴜᴍ!</b>\n\n"
     else:
         status_message += f"⏳ <b>Rᴇᴍᴀɪɴɪɴɢ:</b> <code>{remaining}</code> ᴍᴏʀᴇ ʀᴇғᴇʀʀᴀʟs ᴛᴏ ɢᴇᴛ {REFERRAL_PREMIUM_DAYS} ᴅᴀʏs ᴏғ Pʀᴇᴍɪᴜᴍ!\n\n"
-    
+
     status_message += f"🔗 <b>Yᴏᴜʀ Rᴇғᴇʀʀᴀʟ Lɪɴᴋ:</b>\n<code>{referral_link}</code>\n\n"
     status_message += f"💡 <b>Hᴏᴡ ɪᴛ ᴡᴏʀᴋs:</b>\n"
     status_message += f"1. Sʜᴀʀᴇ ʏᴏᴜʀ ʀᴇғᴇʀʀᴀʟ ʟɪɴᴋ\n"
     status_message += f"2. Wʜᴇɴ {REFERRAL_COUNT} ᴜsᴇʀs ᴊᴏɪɴ ᴜsɪɴɢ ʏᴏᴜʀ ʟɪɴᴋ\n"
     status_message += f"3. Yᴏᴜ ɢᴇᴛ {REFERRAL_PREMIUM_DAYS} ᴅᴀʏs ᴏғ Pʀᴇᴍɪᴜᴍ! 🎁"
-    
+
     buttons = [
         [InlineKeyboardButton("📤 Sʜᴀʀᴇ Lɪɴᴋ", url=f"https://t.me/share/url?url={referral_link}&text=Join%20this%20amazing%20bot!")],
         [InlineKeyboardButton("• ʙᴜʏ ᴘʀᴇᴍɪᴜᴍ •", callback_data="buy_prem")]
     ]
-    
+
     await message.reply_text(
         status_message,
         reply_markup=InlineKeyboardMarkup(buttons),
@@ -2461,14 +2459,14 @@ async def set_caption_command(client: Client, message: Message):
                 "To remove caption, use: `/set_caption None`"
             )
             return
-        
+
         caption_text = message.text.split("/set_caption", 1)[1].strip()
-        
+
         if caption_text.lower() == "none":
             caption_text = None
-        
+
         success = await db.set_custom_caption(caption_text)
-        
+
         if success:
             if caption_text:
                 await message.reply_text(
@@ -2489,14 +2487,14 @@ async def set_caption_command(client: Client, message: Message):
 async def get_caption_command(client: Client, message: Message):
     try:
         caption = await db.get_custom_caption()
-        
+
         if caption:
             await message.reply_text(
                 f"📝 <b>Current Custom Caption:</b>\n\n{caption}",
                 parse_mode=ParseMode.HTML
             )
         else:
-            
+
             from config import CUSTOM_CAPTION
             if CUSTOM_CAPTION:
                 await message.reply_text(
