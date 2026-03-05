@@ -659,6 +659,13 @@ __Enter new integer value of auto delete timer, keep 0 to disable auto delete an
 
 @Client.on_callback_query(filters.regex("^texts$"))
 async def texts(client, query):
+    from database.database import db
+    from config import CUSTOM_CAPTION
+    custom_caption = await db.get_custom_caption()
+    if not custom_caption:
+        custom_caption = CUSTOM_CAPTION
+    current_caption = custom_caption if custom_caption else "Empty"
+
     msg = f"""<blockquote>**Text Configuration:**</blockquote>
 **Start Message:**
 <pre>{client.messages.get('START', 'Empty')}</pre>
@@ -667,15 +674,45 @@ async def texts(client, query):
 **About Message:**
 <pre>{client.messages.get('ABOUT', 'Empty')}</pre>
 **Reply Message:**
-<pre>{client.reply_text}</pre>
+<pre>{client.reply_text if client.reply_text else 'Empty'}</pre>
+**Custom Caption:**
+<pre>{current_caption}</pre>
     """
     reply_markup = InlineKeyboardMarkup([
         [InlineKeyboardButton(f'ꜱᴛᴀʀᴛ ᴛᴇxᴛ', 'start_txt'), InlineKeyboardButton(f'ꜰꜱᴜʙ ᴛᴇxᴛ', 'fsub_txt')],
         [InlineKeyboardButton('ʀᴇᴘʟʏ ᴛᴇxᴛ', 'reply_txt'), InlineKeyboardButton('ᴀʙᴏᴜᴛ ᴛᴇxᴛ', 'about_txt')],
+        [InlineKeyboardButton('ᴄᴀᴘᴛɪᴏɴ ᴛᴇxᴛ', 'caption_txt')],
         [InlineKeyboardButton('◂ ʙᴀᴄᴋ', 'settings')]]
     )
     await query.message.edit_text(msg, reply_markup=reply_markup)
     return
+
+@Client.on_callback_query(filters.regex("^caption_txt$"))
+async def caption_txt_callback(client, query):
+    msg = f"""<blockquote>**Change Custom Caption:**</blockquote>
+__Enter new custom caption text, or wait for 60 second timeout to be completed!__
+__Send `None` to remove custom caption.__
+"""
+    await query.answer()
+    await query.message.edit_text(msg)
+    try:
+        from database.database import db
+        res = await client.listen(chat_id=query.from_user.id, filters=filters.text, timeout=60)
+        caption_text = res.text.strip()
+        if caption_text.lower() == "none":
+            caption_text = None
+
+        success = await db.set_custom_caption(caption_text)
+        if success:
+            if caption_text:
+                return await query.message.edit_text(f"**Custom caption has been set successfully!**\n\n**Caption:** {caption_text}", reply_markup=InlineKeyboardMarkup([[InlineKeyboardButton('◂ ʙᴀᴄᴋ', 'texts')]]))
+            else:
+                return await query.message.edit_text("**Custom caption has been removed.**", reply_markup=InlineKeyboardMarkup([[InlineKeyboardButton('◂ ʙᴀᴄᴋ', 'texts')]]))
+        else:
+            return await query.message.edit_text("**Failed to set custom caption. Please try again.**", reply_markup=InlineKeyboardMarkup([[InlineKeyboardButton('◂ ʙᴀᴄᴋ', 'texts')]]))
+    except ListenerTimeout:
+        return await query.message.edit_text("**Timeout, try again!**", reply_markup=InlineKeyboardMarkup([[InlineKeyboardButton('◂ ʙᴀᴄᴋ', 'texts')]]))
+
 
 
 
