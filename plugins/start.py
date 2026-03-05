@@ -849,8 +849,10 @@ async def send_random_video(client: Client, chat_id, protect=True, caption="", r
         await store_videos(client)
         vids = await db.get_videos()
 
-    if vids:
-        random_video = random.choice(vids)
+    # Filter out empty file_ids
+    valid_vids = [v for v in vids if v.get("file_id")]
+    if valid_vids:
+        random_video = random.choice(valid_vids)
 
         final_caption = "" if hide_caption else (caption if caption else None)
         try:
@@ -943,10 +945,11 @@ async def send_random_photo(client: Client, chat_id, protect=True, caption="", r
         await asyncio.sleep(2)
         photos = await db.get_photos()
 
-    if photos:
+    valid_photos = [p for p in photos if p.get("file_id")]
+    if valid_photos:
 
         final_caption = "" if hide_caption else (caption if caption else None)
-        random_photo = random.choice(photos)
+        random_photo = random.choice(valid_photos)
         try:
             sent_msg = await client.send_photo(
                 chat_id,
@@ -1520,10 +1523,12 @@ async def send_batch_media(client: Client, chat_id, protect=True, caption=None, 
     all_media = []
     if photos:
         for photo in photos:
-            all_media.append(("photo", photo["file_id"]))
+            if photo.get("file_id"):
+                all_media.append(("photo", photo["file_id"]))
     if videos:
         for video in videos:
-            all_media.append(("video", video["file_id"]))
+            if video.get("file_id"):
+                all_media.append(("video", video["file_id"]))
 
     if not all_media:
         await client.send_message(chat_id, "No media available right now.")
