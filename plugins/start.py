@@ -23,7 +23,7 @@ from pyrogram.types import (
     InputMediaVideo,
     ReplyKeyboardMarkup,
 )
-from pyrogram.errors import FloodWait, UserIsBlocked, InputUserDeactivated
+from pyrogram.errors import FloodWait, UserIsBlocked, InputUserDeactivated, MediaEmpty
 from plugins.autoDelete import auto_del_notification, delete_message
 from bot import Bot
 from config import *
@@ -843,7 +843,10 @@ async def store_videos(app: Client):
 
 
 
-async def send_random_video(client: Client, chat_id, protect=True, caption="", reply_markup=None, hide_caption=False):
+async def send_random_video(client: Client, chat_id, protect=True, caption="", reply_markup=None, hide_caption=False, retries=3):
+    if retries == 0:
+        return await client.send_message(chat_id, "Failed to fetch a valid video after multiple attempts.")
+
     vids = await db.get_videos()
     if not vids:
         await store_videos(client)
@@ -876,6 +879,11 @@ async def send_random_video(client: Client, chat_id, protect=True, caption="", r
                 protect_content=protect
             )
             return sent_msg
+        except MediaEmpty:
+            # File ID is invalid/expired. Remove it and retry.
+            client.LOGGER(__name__).warning(f"Invalid video file_id detected. Removing {random_video['file_id']} from DB.")
+            await db.videos_collection.delete_one({"file_id": random_video["file_id"]})
+            return await send_random_video(client, chat_id, protect, caption, reply_markup, hide_caption, retries - 1)
     else:
         await client.send_message(chat_id, "No videos available right now.")
         return None
@@ -935,7 +943,10 @@ async def store_photos(app: Client):
 
 
 
-async def send_random_photo(client: Client, chat_id, protect=True, caption="", reply_markup=None, hide_caption=False):
+async def send_random_photo(client: Client, chat_id, protect=True, caption="", reply_markup=None, hide_caption=False, retries=3):
+    if retries == 0:
+        return await client.send_message(chat_id, "Failed to fetch a valid photo after multiple attempts.")
+
     photos = await db.get_photos()
 
     if not photos:
@@ -971,6 +982,11 @@ async def send_random_photo(client: Client, chat_id, protect=True, caption="", r
                 protect_content=protect
             )
             return sent_msg
+        except MediaEmpty:
+            # File ID is invalid/expired. Remove it and retry.
+            client.LOGGER(__name__).warning(f"Invalid photo file_id detected. Removing {random_photo['file_id']} from DB.")
+            await db.photos_collection.delete_one({"file_id": random_photo["file_id"]})
+            return await send_random_photo(client, chat_id, protect, caption, reply_markup, hide_caption, retries - 1)
     else:
         await client.send_message(chat_id, "No photos available right now.")
         return None
@@ -1559,6 +1575,17 @@ async def send_batch_media(client: Client, chat_id, protect=True, caption=None, 
             await asyncio.sleep(e.x)
             sent_msgs = await client.send_media_group(chat_id, media_group, protect_content=protect)
             return sent_msgs
+        except MediaEmpty:
+            # At least one item in media_group is an invalid/expired file_id.
+            # We must clean all selected items to be safe, then let the user try again.
+            client.LOGGER(__name__).warning("Invalid file_id found in batch. Deleting selected items from DB.")
+            for media_type, f_id in selected:
+                if media_type == "photo":
+                    await db.photos_collection.delete_one({"file_id": f_id})
+                elif media_type == "video":
+                    await db.videos_collection.delete_one({"file_id": f_id})
+            await client.send_message(chat_id, "Encountered some invalid media in the database. Cleaned up, please try again.")
+            return None
     return None
 
 
