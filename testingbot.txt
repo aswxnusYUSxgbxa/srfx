@@ -77,3 +77,72 @@ Bot Starting without DB Channel access. Please forward a message to the bot to c
 [27-Feb-26 06:01:49 - INFO] - __main__ - Bot is now running. Thanks to @rohithinte thandha 
 [27-Feb-26 06:05:38 - INFO] - root - [DEBUG] Received message in Chat: None (ID: 1137799257, Type: ChatType.PRIVATE)
 [27-Feb-26 06:05:38 - INFO] - root - Received /start command from user ID: 1137799257
+[27-Feb-26 10:43:47 - WARNING] - pyrogram.connection.connection - Unable to connect due to network issues: [Errno 101] Network is unreachable
+[27-Feb-26 10:43:48 - WARNING] - pyrogram.connection.connection - Unable to connect due to network issues: [Errno 101] Network is unreachable
+[27-Feb-26 10:43:49 - WARNING] - pyrogram.connection.connection - Unable to connect due to network issues: [Errno 101] Network is unreachable
+[27-Feb-26 10:43:50 - WARNING] - pyrogram.connection.connection - Connection failed! Trying again...
+[27-Feb-26 10:43:50 - WARNING] - pyrogram.connection.connection - Unable to connect due to network issues: [Errno 101] Network is unreachable
+[27-Feb-26 10:43:51 - WARNING] - pyrogram.connection.connection - Unable to connect due to network issues: [Errno 101] Network is unreachable
+[27-Feb-26 10:43:52 - WARNING] - pyrogram.connection.connection - Unable to connect due to network issues: [Errno 101] Network is unreachable
+[27-Feb-26 10:43:53 - WARNING] - pyrogram.connection.connection - Connection failed! Trying again...
+[27-Feb-26 10:43:53 - WARNING] - pyrogram.connection.connection - Unable to connect due to network issues: [Errno 101] Network is unreachable
+[04-Mar-26 17:49:43 - INFO] - __main__ - Bot Running..! Made by @rohithinte thandha 
+[04-Mar-26 17:49:43 - INFO] - __main__ - Bot Username: @whapiybbot
+[04-Mar-26 17:49:43 - INFO] - __main__ - Bot is now running. Thanks to @rohithinte thandha 
+[04-Mar-26 17:49:53 - INFO] - root - [DEBUG] Received message in Chat: None (ID: 1137799257, Type: ChatType.PRIVATE)
+[04-Mar-26 17:49:53 - INFO] - root - Received /start command from user ID: 1137799257
+[04-Mar-26 17:53:52 - INFO] - __main__ - Shutting down...
+[04-Mar-26 18:51:20 - INFO] - __main__ - Bot Running..! Made by @rohithinte thandha 
+[04-Mar-26 18:51:20 - INFO] - __main__ - Bot Username: @whapiybbot
+[04-Mar-26 18:51:20 - INFO] - __main__ - Bot is now running. Thanks to @rohithinte thandha 
+[04-Mar-26 18:52:34 - INFO] - root - [DEBUG] Received message in Chat: None (ID: 1137799257, Type: ChatType.PRIVATE)
+[04-Mar-26 18:52:34 - INFO] - root - Received /start command from user ID: 1137799257
+[04-Mar-26 18:54:43 - INFO] - root - [DEBUG] Received message in Chat: None (ID: 6765202867, Type: ChatType.PRIVATE)
+[04-Mar-26 18:54:52 - INFO] - root - [DEBUG] Received message in Chat: None (ID: 6765202867, Type: ChatType.PRIVATE)
+[04-Mar-26 19:30:00 - INFO] - root - All free usage counts reset.
+[04-Mar-26 21:24:12 - WARNING] - pyrogram.connection.connection - Unable to connect due to network issues: [Errno 101] Network is unreachable
+[04-Mar-26 21:24:13 - WARNING] - pyrogram.connection.connection - Unable to connect due to network issues: [Errno 101] Network is unreachable
+[04-Mar-26 21:24:14 - WARNING] - pyrogram.connection.connection - Unable to connect due to network issues: [Errno 101] Network is unreachable
+[04-Mar-26 21:24:15 - WARNING] - pyrogram.connection.connection - Connection failed! Trying again...
+[04-Mar-26 21:24:15 - WARNING] - pyrogram.connection.connection - Unable to connect due to network issues: [Errno 101] Network is unreachable
+[04-Mar-26 21:24:16 - WARNING] - pyrogram.connection.connection - Unable to connect due to network issues: [Errno 101] Network is unreachable
+[04-Mar-26 21:24:17 - WARNING] - pyrogram.connection.connection - Unable to connect due to network issues: [Errno 101] Network is unreachable
+[04-Mar-26 21:24:18 - WARNING] - pyrogram.connection.connection - Connection failed! Trying again...
+[04-Mar-26 21:24:18 - WARNING] - pyrogram.connection.connection - Unable to connect due to network issues: [Errno 101] Network is unreachable
+[04-Mar-26 21:24:19 - WARNING] - pyrogram.connection.connection - Unable to connect due to network issues: [Errno 101] Network is unreachable
+[04-Mar-26 21:24:20 - WARNING] - pyrogram.connection.connection - Unable to connect due to network issues: [Errno 101] Network is unreachable
+[04-Mar-26 21:24:21 - WARNING] - pyrogram.connection.connection - Connection failed! Trying again...
+[04-Mar-26 21:24:21 - WARNING] - pyrogram.connection.connection - Unable to connect due to network issues: [Errno 101] Network is unreachable
+[04-Mar-26 21:24:22 - WARNING] - pyrogram.connection.connection - Unable to connect due to network issues: [Errno 101] Network is unreachable
+[04-Mar-26 21:24:23 - WARNING] - pyrogram.connection.connection - Unable to connect due to network issues: [Errno 101] Network is unreachable
+[04-Mar-26 21:24:24 - WARNING] - pyrogram.connection.connection - Connection failed! Trying again...
+[04-Mar-26 21:24:24 - WARNING] - pyrogram.connection.connection - Unable to connect due to network issues: [Errno 101] Network is unreachable
+[04-Mar-26 21:24:25 - WARNING] - pyrogram.connection.connection - Unable to connect due to network issues: [Errno 101] Network is unreachable
+[04-Mar-26 21:24:26 - WARNING] - pyrogram.connection.connection - Unable to connect due to network issues: [Errno 101] Network is unreachable
+[04-Mar-26 21:24:27 - WARNING] - pyrogram.connection.connection - Connection failed! Trying again...
+[04-Mar-26 21:24:27 - WARNING] - pyrogram.connection.connection - Unable to connect due to network issues: [Errno 101] Network is unreachable
+[04-Mar-26 21:24:28 - WARNING] - pyrogram.connection.connection - Unable to connect due to network issues: [Errno 101] Network is unreachable
+[04-Mar-26 21:24:29 - WARNING] - pyrogram.connection.connection - Unable to connect due to network issues: [Errno 101] Network is unreachable
+[04-Mar-26 21:24:30 - WARNING] - pyrogram.connection.connection - Connection failed! Trying again...
+[04-Mar-26 21:24:30 - WARNING] - pyrogram.connection.connection - Unable to connect due to network issues: [Errno 101] Network is unreachable
+[04-Mar-26 21:24:31 - WARNING] - pyrogram.connection.connection - Unable to connect due to network issues: [Errno 101] Network is unreachable
+[04-Mar-26 21:24:32 - WARNING] - pyrogram.connection.connection - Unable to connect due to network issues: [Errno 101] Network is unreachable
+[04-Mar-26 21:24:33 - WARNING] - pyrogram.connection.connection - Connection failed! Trying again...
+[04-Mar-26 21:24:33 - WARNING] - pyrogram.connection.connection - Unable to connect due to network issues: [Errno 101] Network is unreachable
+[04-Mar-26 21:24:34 - WARNING] - pyrogram.connection.connection - Unable to connect due to network issues: [Errno 101] Network is unreachable
+[04-Mar-26 21:24:35 - WARNING] - pyrogram.connection.connection - Unable to connect due to network issues: [Errno 101] Network is unreachable
+[04-Mar-26 21:24:46 - WARNING] - pyrogram.connection.connection - Connection failed! Trying again...
+[04-Mar-26 21:24:46 - WARNING] - pyrogram.connection.connection - Unable to connect due to network issues: [Errno 101] Network is unreachable
+[04-Mar-26 21:24:47 - WARNING] - pyrogram.connection.connection - Unable to connect due to network issues: [Errno 101] Network is unreachable
+[04-Mar-26 21:24:48 - WARNING] - pyrogram.connection.connection - Unable to connect due to network issues: [Errno 101] Network is unreachable
+[04-Mar-26 21:24:49 - WARNING] - pyrogram.connection.connection - Connection failed! Trying again...
+[04-Mar-26 21:24:49 - WARNING] - pyrogram.connection.connection - Unable to connect due to network issues: [Errno 101] Network is unreachable
+[04-Mar-26 21:24:50 - WARNING] - pyrogram.connection.connection - Unable to connect due to network issues: [Errno 101] Network is unreachable
+[04-Mar-26 21:24:51 - WARNING] - pyrogram.connection.connection - Unable to connect due to network issues: [Errno 101] Network is unreachable
+[04-Mar-26 21:24:52 - WARNING] - pyrogram.connection.connection - Connection failed! Trying again...
+[04-Mar-26 21:24:52 - WARNING] - pyrogram.connection.connection - Unable to connect due to network issues: [Errno 101] Network is unreachable
+[05-Mar-26 11:17:42 - INFO] - __main__ - Bot Running..! Made by @rohithinte thandha 
+[05-Mar-26 11:17:42 - INFO] - __main__ - Bot Username: @whapiybbot
+[05-Mar-26 11:17:43 - INFO] - __main__ - Bot is now running. Thanks to @rohithinte thandha 
+[05-Mar-26 11:21:54 - INFO] - root - [DEBUG] Received message in Chat: None (ID: 6765202867, Type: ChatType.PRIVATE)
+[05-Mar-26 11:21:59 - INFO] - root - [DEBUG] Received message in Chat: None (ID: 6765202867, Type: ChatType.PRIVATE)

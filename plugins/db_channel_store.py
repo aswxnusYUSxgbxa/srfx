@@ -9,7 +9,7 @@ logging.basicConfig(level=logging.INFO)
 
 @Bot.on_message(filters.chat(CHANNEL_ID) & (filters.photo | filters.video | filters.document | filters.animation))
 async def store_db_channel_media(client, message):
-    """Store incoming media posted in configured DB channel into the database collections."""
+    
     try:
         if message.photo:
             photo = message.photo[-1]

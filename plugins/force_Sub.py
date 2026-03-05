@@ -2,7 +2,7 @@
 from pyrogram import Client, filters
 from pyrogram.types import CallbackQuery, InlineKeyboardButton, InlineKeyboardMarkup
 
-MAX_CHANNELS = 5  
+MAX_CHANNELS = 5 
 
 
 

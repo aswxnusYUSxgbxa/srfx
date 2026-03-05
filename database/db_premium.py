@@ -3,13 +3,13 @@ from config import DB_URI, DB_NAME
 from pytz import timezone
 from datetime import datetime, timedelta
 
-# Create an async client with Motor
+
 dbclient = motor.motor_asyncio.AsyncIOMotorClient(DB_URI)
 database = dbclient[DB_NAME]
 collection = database['premium-users']
 
 
-# Check if the user is a premium user (active only)
+
 async def is_premium_user(user_id):
     user = await collection.find_one({"user_id": user_id})
     if not user:
@@ -31,18 +31,18 @@ async def is_premium_user(user_id):
     return expiration_time > datetime.now(ist)
 
 
-# Remove premium user
+
 async def remove_premium(user_id):
     await collection.delete_one({"user_id": user_id})
 
 
-# Remove expired users
+
 async def remove_expired_users():
     current_time = datetime.now().isoformat()
     await collection.delete_many({"expiration_timestamp": {"$lte": current_time}})
 
 
-# List active premium users
+
 async def list_premium_users():
     ist = timezone("Asia/Kolkata")
     premium_users = collection.find({})
@@ -52,7 +52,7 @@ async def list_premium_users():
         expiration_time = datetime.fromisoformat(user["expiration_timestamp"]).astimezone(ist)
         remaining_time = expiration_time - datetime.now(ist)
 
-        if remaining_time.total_seconds() > 0:  # Active only
+        if remaining_time.total_seconds() > 0:  
             days, hours, minutes, seconds = (
                 remaining_time.days,
                 remaining_time.seconds // 3600,
@@ -68,7 +68,7 @@ async def list_premium_users():
     return premium_user_list
 
 
-# Add premium user
+
 async def add_premium(user_id, time_value, time_unit):
     """
     Add a premium user for a specific duration in minutes or days.
@@ -103,7 +103,7 @@ async def add_premium(user_id, time_value, time_unit):
     return formatted_expiration_time
 
 
-# Check user plan (Premium / Not Premium)
+
 async def check_user_plan(user_id):
     user = await collection.find_one({"user_id": user_id})
     if not user:
@@ -115,7 +115,7 @@ async def check_user_plan(user_id):
 
     ist = timezone("Asia/Kolkata")
 
-    # Handle string or datetime
+    
     if isinstance(expiration_timestamp, str):
         expiration_time = datetime.fromisoformat(expiration_timestamp).astimezone(ist)
     elif isinstance(expiration_timestamp, datetime):

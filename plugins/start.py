@@ -13,7 +13,7 @@ from pytz import timezone
 import pytz
 
 from pyrogram import Client, filters
-from pyrogram.enums import ParseMode, ChatAction
+from pyrogram.enums import ParseMode, ChatAction, ChatMemberStatus
 from pyrogram.types import (
     Message,
     KeyboardButton,
@@ -27,7 +27,7 @@ from pyrogram.errors import FloodWait, UserIsBlocked, InputUserDeactivated
 from plugins.autoDelete import auto_del_notification, delete_message
 from bot import Bot
 from config import *
-from helper.helper_func import is_admin, subscribed, banUser, is_subscribed
+from helper.helper_func import is_admin, subscribed, banUser, is_subscribed, check_subscription
 from helper_func import *
 from database.database import db
 from database.db_premium import *
@@ -1850,59 +1850,57 @@ async def schedule_spam_notification(client: Client, user_id: int, action_type: 
         logging.error(f"Failed to schedule spam notification: {e}")
 
 async def not_joined(client: Client, message: Message):
-    temp = await message.reply(f"<b>??</b>")
+    if not client.fsub_dict:
+        return
+
+    temp = await message.reply("<code><b>ᴡᴀɪᴛ ᴀ sᴇᴄᴏɴᴅ.....</b></code>")
 
     user_id = message.from_user.id
+    statuses = await check_subscription(client, user_id)
 
-    REQFSUB = await db.get_request_forcesub()
     buttons = []
-    count = 0
+    
+    for channel_id, (channel_name, channel_link, request, timer) in client.fsub_dict.items():
+        status = statuses.get(channel_id, None)
 
-    try:
-        for total, chat_id in enumerate(await db.get_all_channels(), start=1):
-            await message.reply_chat_action(ChatAction.PLAYING)
+        if timer > 0:
+            expire_time = datetime.now() + timedelta(minutes=timer)
+            try:
+                invite = await client.create_chat_invite_link(
+                    chat_id=channel_id,
+                    expire_date=expire_time,
+                    creates_join_request=request
+                )
+                channel_link = invite.invite_link
+            except Exception as e:
+                client.LOGGER(__name__, client.name).warning(f"Error creating invite link for {channel_name}: {e}")
 
-            
-            if not await is_userJoin(client, user_id, chat_id):
+        if status not in {ChatMemberStatus.MEMBER, ChatMemberStatus.ADMINISTRATOR, ChatMemberStatus.OWNER}:
+            button_text = channel_name
+            if request:
                 try:
-                    
-                    if chat_id in chat_data_cache:
-                        data = chat_data_cache[chat_id]  
-                    else:
-                        data = await client.get_chat(chat_id)  
-                        chat_data_cache[chat_id] = data  
-
-                    cname = data.title
-
-                    
-                    if REQFSUB and not data.username: 
-                        link = await db.get_stored_reqLink(chat_id)
-                        await db.add_reqChannel(chat_id)
-
-                        if not link:
-                            link = (await client.create_chat_invite_link(chat_id=chat_id, creates_join_request=True)).invite_link
-                            await db.store_reqLink(chat_id, link)
-                    else:
-                        link = data.invite_link
-
-                    
-                    buttons.append([InlineKeyboardButton(text=cname, url=link)])
-                    count += 1
-                    await temp.edit(f"<b>{'! ' * count}</b>")
-
-                except Exception as e:
-                    print(f"Can't Export Channel Name and Link..., Please Check If the Bot is admin in the FORCE SUB CHANNELS:\nProvided Force sub Channel:- {chat_id}")
-                    return await temp.edit(f"<b><i>! Eʀʀᴏʀ, Cᴏɴᴛᴀᴄᴛ ᴅᴇᴠᴇʟᴏᴘᴇʀ ᴛᴏ sᴏʟᴠᴇ ᴛʜᴇ ɪssᴜᴇs @rohit_1888</i></b>\n<blockquote expandable><b>Rᴇᴀsᴏɴ:</b> {e}</blockquote>")
-
-        
-        try:
+                    if await client.mongodb.has_submitted_join_request(user_id, channel_id):
+                        request_status = await client.mongodb.get_join_request_status(user_id, channel_id)
+                        if request_status == "pending":
+                            continue
+                except Exception:
+                    pass
+            buttons.append([InlineKeyboardButton(text=button_text, url=channel_link)])
+            
+    try:
+        from_link = message.text.split(" ")
+        if len(from_link) > 1:
+            try_again_link = f"https://t.me/{client.username}/?start={from_link[1]}"
+            buttons.append([InlineKeyboardButton("🔄 Try Again", url=try_again_link)])
+        else:
             buttons.append([
-                InlineKeyboardButton(text="Get Batch 📦", callback_data=f"get_again_get_batch_{user_id}"),
+                InlineKeyboardButton(text="🔄 Try Again", callback_data=f"get_again_get_batch_{user_id}"),
                 InlineKeyboardButton(text="Close ✖️", callback_data="close")
             ])
-        except Exception:
-            pass
+    except Exception:
+        pass
 
+    try:
         await message.reply_photo(
             photo=FORCE_PIC,
             caption=FORCE_MSG.format(
@@ -1914,10 +1912,10 @@ async def not_joined(client: Client, message: Message):
             ),
             reply_markup=InlineKeyboardMarkup(buttons),
         )
+        await temp.delete()
 
     except Exception as e:
         print(f"Error: {e}")  
-        
         await temp.edit(f"<b><i>! Eʀʀᴏʀ, Cᴏɴᴛᴀᴄᴛ ᴅᴇᴠᴇʟᴏᴘᴇʀ ᴛᴏ sᴏʟᴠᴇ ᴛʜᴇ ɪssᴜᴇs @rohit_1888</i></b>\n<blockquote expandable><b>Rᴇᴀsᴏɴ:</b> {e}</blockquote>")
 
 
