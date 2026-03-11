@@ -207,11 +207,12 @@ async def start_command(client: Client, message: Message):
                 )
 
 
-        payload = text.split(" ", 1)[1] if " " in text else text
+        payload = text.split(" ", 1)[1] if text.startswith("/start ") else text
 
         if payload.startswith("get_photo_"):
             try:
-                _, _, user_id_str = payload.split("_", 2)
+                _, user_id_str = payload.split("get_photo_", 1)
+                user_id_str = user_id_str.split("_")[0] if "_" in user_id_str else user_id_str
                 if int(user_id_str) == user_id:
                     return await get_photo(client, message)
             except:
@@ -219,7 +220,8 @@ async def start_command(client: Client, message: Message):
 
         if payload.startswith("get_video_"):
             try:
-                _, _, user_id_str = payload.split("_", 2)
+                _, user_id_str = payload.split("get_video_", 1)
+                user_id_str = user_id_str.split("_")[0] if "_" in user_id_str else user_id_str
                 if int(user_id_str) == user_id:
                     return await get_video(client, message)
             except:
@@ -227,7 +229,8 @@ async def start_command(client: Client, message: Message):
 
         if payload.startswith("get_batch_"):
             try:
-                _, _, user_id_str = payload.split("_", 2)
+                _, user_id_str = payload.split("get_batch_", 1)
+                user_id_str = user_id_str.split("_")[0] if "_" in user_id_str else user_id_str
                 if int(user_id_str) == user_id:
                     return await get_batch(client, message)
             except:
@@ -812,7 +815,7 @@ async def store_videos(app: Client):
         await db.insert_videos(all_videos)
 
 
-# --- Send Random Video ---
+
 async def send_random_video(client: Client, chat_id, protect=True, caption="", reply_markup=None, hide_caption=False):
     vids = await db.get_videos()
     if not vids:
@@ -851,12 +854,12 @@ async def send_random_video(client: Client, chat_id, protect=True, caption="", r
 
 
 async def store_photos(app: Client):
-    # Use smaller batch size to avoid rate limits
+
     batch_size = 100
     all_photos = []
     full, part = divmod(len(VIDEOS_RANGE), batch_size)
 
-    # Process in smaller batches with delays
+
     for i in range(full):
         try:
             batch_ids = VIDEOS_RANGE[i * batch_size: (i + 1) * batch_size]
@@ -870,15 +873,15 @@ async def store_photos(app: Client):
                     if not exists:
                         all_photos.append({"file_id": file_id})
 
-            # Add delay between batches to avoid rate limits
-            if i < full - 1:  # Don't delay after last batch
-                await asyncio.sleep(1)  # 1 second delay between batches
+
+            if i < full - 1:
+                await asyncio.sleep(1)
         except Exception as e:
             logging.error(f"Error fetching photos batch {i}: {e}")
-            await asyncio.sleep(2)  # Longer delay on error
+            await asyncio.sleep(2)
             continue
 
-    # Process remaining messages
+
     if part > 0:
         try:
             remaining_ids = VIDEOS_RANGE[full * batch_size:]
@@ -902,7 +905,7 @@ async def store_photos(app: Client):
             logging.error(f"Error inserting photos: {e}")
 
 
-# --- Send Random Photo ---
+
 async def send_random_photo(client: Client, chat_id, protect=True, caption="", reply_markup=None, hide_caption=False):
     photos = await db.get_photos()
 
@@ -2513,11 +2516,11 @@ async def get_caption_command(client: Client, message: Message):
 async def store_videos_dynamic(app: Client):
     all_videos = []
     try:
-        last_msgs = await try_until_get(app.get_history(CHANNEL_ID, limit=1))
-        if not last_msgs:
+        last_msgs_list = [msg async for msg in app.get_chat_history(CHANNEL_ID, limit=1)]
+        if not last_msgs_list:
             logging.info("No messages found in channel when storing videos (dynamic).")
             return
-        last_id = last_msgs[0].message_id
+        last_id = last_msgs_list[0].id
     except Exception as e:
         logging.error(f"Error fetching channel last message id: {e}")
         return
@@ -2551,11 +2554,11 @@ async def store_photos_dynamic(app: Client):
     batch_size = 100
     all_photos = []
     try:
-        last_msgs = await try_until_get(app.get_history(CHANNEL_ID, limit=1))
-        if not last_msgs:
+        last_msgs_list = [msg async for msg in app.get_chat_history(CHANNEL_ID, limit=1)]
+        if not last_msgs_list:
             logging.info("No messages found in channel when storing photos (dynamic).")
             return
-        last_id = last_msgs[0].message_id
+        last_id = last_msgs_list[0].id
     except Exception as e:
         logging.error(f"Error fetching channel last message id: {e}")
         return
