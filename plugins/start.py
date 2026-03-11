@@ -42,7 +42,7 @@ logging.basicConfig(level=logging.INFO)
 IST = timezone("Asia/Kolkata")
 
 
-@Bot.on_message(filters.command("start") & filters.private)
+@Client.on_message(filters.command("start") & filters.private)
 @force_sub
 async def start_command(client: Client, message: Message):
     id = message.from_user.id
@@ -559,7 +559,7 @@ async def start_command(client: Client, message: Message):
 
 
 
-@Bot.on_message(filters.command('check') & filters.private)
+@Client.on_message(filters.command('check') & filters.private)
 async def check_command(client: Client, message: Message):
     user_id = message.from_user.id
     
@@ -643,7 +643,18 @@ async def check_command(client: Client, message: Message):
         )
 
 
-@Bot.on_message(filters.regex("Plan Status 🔖"))
+@Client.on_message(filters.private & filters.text, group=1)
+async def handle_buttons(client: Client, message: Message):
+    text = message.text or ""
+    if text.startswith("Get Photo"):
+        await on_get_photo(client, message)
+    elif text.startswith("Get Video"):
+        await on_get_video(client, message)
+    elif text.startswith("Get Batch"):
+        await on_get_batch(client, message)
+    elif text.startswith("Plan Status"):
+        await on_plan_status(client, message)
+
 async def on_plan_status(client: Client, message: Message):
     from pytz import timezone
     ist = timezone("Asia/Kolkata")
@@ -736,7 +747,6 @@ async def on_plan_status(client: Client, message: Message):
         )
 
 
-@Bot.on_message(filters.regex("Get Video 🍒"))
 async def on_get_video(client: Client, message: Message):
     user_id = message.from_user.id
         
@@ -751,7 +761,6 @@ async def on_get_video(client: Client, message: Message):
     await get_video(client, message)
 
 
-@Bot.on_message(filters.regex("Get Photo 📸"))
 async def on_get_photo(client: Client, message: Message):
     user_id = message.from_user.id
             
@@ -766,7 +775,6 @@ async def on_get_photo(client: Client, message: Message):
     await get_photo(client, message)
 
 
-@Bot.on_message(filters.regex("Get Batch 📦"))
 async def on_get_batch(client: Client, message: Message):
     user_id = message.from_user.id
             
@@ -814,7 +822,7 @@ async def store_videos(app: Client):
 async def send_random_video(client: Client, chat_id, protect=True, caption="", reply_markup=None, hide_caption=False):
     vids = await db.get_videos()
     if not vids:
-        await store_videos(client)
+        await store_videos_dynamic(client)
         vids = await db.get_videos()
 
     if vids:
@@ -906,7 +914,7 @@ async def send_random_photo(client: Client, chat_id, protect=True, caption="", r
     
     if not photos:
         
-        asyncio.create_task(store_photos(client))
+        asyncio.create_task(store_photos_dynamic(client))
         
         await asyncio.sleep(2)
         photos = await db.get_photos()
@@ -1467,12 +1475,12 @@ async def send_batch_media(client: Client, chat_id, protect=True, caption=None, 
     
     
     if not photos:
-        asyncio.create_task(store_photos(client))
+        asyncio.create_task(store_photos_dynamic(client))
         await asyncio.sleep(1)  
         photos = await db.get_photos()
     
     if not videos:
-        asyncio.create_task(store_videos(client))
+        asyncio.create_task(store_videos_dynamic(client))
         await asyncio.sleep(1)  
         videos = await db.get_videos()
 
@@ -1919,14 +1927,14 @@ async def not_joined(client: Client, message: Message):
         await temp.edit(f"<b><i>! Eʀʀᴏʀ, Cᴏɴᴛᴀᴄᴛ ᴅᴇᴠᴇʟᴏᴘᴇʀ ᴛᴏ sᴏʟᴠᴇ ᴛʜᴇ ɪssᴜᴇs @rohit_1888</i></b>\n<blockquote expandable><b>Rᴇᴀsᴏɴ:</b> {e}</blockquote>")
 
 
-@Bot.on_message(filters.command('users') & filters.private & filters.user(OWNER_ID))
+@Client.on_message(filters.command('users') & filters.private & filters.user(OWNER_ID))
 async def get_users(client: Bot, message: Message):
     msg = await client.send_message(chat_id=message.chat.id, text=WAIT_MSG)
     users = await db.full_userbase()
     await msg.edit(f"{len(users)} users are using this bot")
 
 
-@Bot.on_message(filters.command('status') & filters.private & is_admin)
+@Client.on_message(filters.command('status') & filters.private & is_admin)
 async def info(client: Bot, message: Message):   
     reply_markup = InlineKeyboardMarkup(
         [[InlineKeyboardButton("• Close •", callback_data="close")]]
@@ -1977,13 +1985,13 @@ cancel_lock = asyncio.Lock()
 is_canceled = False
 
 
-@Bot.on_message(filters.command('cancel') & filters.private & is_admin)
+@Client.on_message(filters.command('cancel') & filters.private & is_admin)
 async def cancel_broadcast(client: Bot, message: Message):
     global is_canceled
     async with cancel_lock:
         is_canceled = True
 
-@Bot.on_message(filters.private & filters.command('broadcast') & is_admin)
+@Client.on_message(filters.private & filters.command('broadcast') & is_admin)
 async def broadcast(client: Bot, message: Message):
     global is_canceled
     args = message.text.split()[1:]
@@ -2126,7 +2134,7 @@ async def auto_delete(sent_msg, duration):
 
 
 
-@Bot.on_message(filters.command('addpaid') & filters.private & is_admin)
+@Client.on_message(filters.command('addpaid') & filters.private & is_admin)
 async def add_premium_user_command(client, msg):
     if len(msg.command) != 4:
         await msg.reply_text("Usage: /addpaid (user_id) time_value time_unit (m/d)")
@@ -2163,7 +2171,7 @@ async def add_premium_user_command(client, msg):
 
 
 
-@Bot.on_message(filters.command('removepaid') & filters.private & is_admin)
+@Client.on_message(filters.command('removepaid') & filters.private & is_admin)
 async def pre_remove_user(client: Client, msg: Message):
     if len(msg.command) != 2:
         await msg.reply_text("useage: /removeuser user_id ")
@@ -2177,7 +2185,7 @@ async def pre_remove_user(client: Client, msg: Message):
 
 
 
-@Bot.on_message(filters.command('listpaid') & filters.private & is_admin)
+@Client.on_message(filters.command('listpaid') & filters.private & is_admin)
 async def list_premium_users_command(client, message):
     
     ist = timezone("Asia/Kolkata")
@@ -2245,7 +2253,7 @@ async def list_premium_users_command(client, message):
     else:
         await message.reply_text("\n\n".join(premium_user_list), parse_mode=ParseMode.HTML)
 
-@Bot.on_message(filters.command('myplan') & filters.private)
+@Client.on_message(filters.command('myplan') & filters.private)
 async def check_plan(client: Client, message: Message):
     user_id = message.from_user.id  
 
@@ -2255,13 +2263,13 @@ async def check_plan(client: Client, message: Message):
     
     await message.reply(status_message)
 
-@Bot.on_message(filters.command('forcesub') & filters.private & ~banUser)
+@Client.on_message(filters.command('forcesub') & filters.private & ~banUser)
 async def fsub_commands(client: Client, message: Message):
     button = [[InlineKeyboardButton("Cʟᴏsᴇ ✖️", callback_data="close")]]
     await message.reply(text=FSUB_CMD_TXT, reply_markup=InlineKeyboardMarkup(button), quote=True)
 
 
-@Bot.on_message(filters.command('help') & filters.private & ~banUser)
+@Client.on_message(filters.command('help') & filters.private & ~banUser)
 async def help(client: Client, message: Message):
     buttons = [
         [
@@ -2287,7 +2295,7 @@ async def help(client: Client, message: Message):
     except Exception as e:
         return await message.reply(f"<b><i>! Eʀʀᴏʀ, Cᴏɴᴛᴀᴄᴛ ᴅᴇᴠᴇʟᴏᴘᴇʀ ᴛᴏ sᴏʟᴠᴇ ᴛʜᴇ ɪssᴜᴇs @rohit_1888</i></b>\n<blockquote expandable><b>Rᴇᴀsᴏɴ:</b> {e}</blockquote>")
 
-@Bot.on_message(filters.command('short') & filters.private & is_admin)
+@Client.on_message(filters.command('short') & filters.private & is_admin)
 async def shorten_link_command(client, message):
     id = message.from_user.id
 
@@ -2338,7 +2346,7 @@ async def shorten_link_command(client, message):
         print(f"! Error occurred on '/short' command: {e}")
 
 
-@Bot.on_message(filters.command("set_free_limit") & is_admin)
+@Client.on_message(filters.command("set_free_limit") & is_admin)
 async def set_free_limit(client: Client, message: Message):
     try:
         limit = int(message.text.split()[1])
@@ -2348,7 +2356,7 @@ async def set_free_limit(client: Client, message: Message):
         await message.reply("❌ Invalid usage. Use the command like this:\n`/set_free_limit 10`")
 
 
-@Bot.on_message(filters.command('free') & filters.private & is_admin)
+@Client.on_message(filters.command('free') & filters.private & is_admin)
 async def toggle_freemode(client: Client, message: Message):
     await message.reply_chat_action(ChatAction.TYPING)
 
@@ -2374,7 +2382,7 @@ async def toggle_freemode(client: Client, message: Message):
     )
 
 
-@Bot.on_message(filters.command("stats") & is_admin)
+@Client.on_message(filters.command("stats") & is_admin)
 async def stats_command(client, message):
     total_users = await db.full_userbase()
     verified_users = await db.full_userbase({"verify_status.is_verified": True})
@@ -2397,7 +2405,7 @@ Free Usage Enabled: <code>{free_enabled}</code>"""
     await message.reply(status)
 
 
-@Bot.on_message(filters.command("referral") & filters.private)
+@Client.on_message(filters.command("referral") & filters.private)
 async def referral_command(client: Client, message: Message):
     user_id = message.from_user.id
     
@@ -2450,7 +2458,7 @@ async def referral_command(client: Client, message: Message):
     )
 
 
-@Bot.on_message(filters.command("set_caption") & filters.private & is_admin)
+@Client.on_message(filters.command("set_caption") & filters.private & is_admin)
 async def set_caption_command(client: Client, message: Message):
     try:
         if len(message.command) < 2:
@@ -2483,7 +2491,7 @@ async def set_caption_command(client: Client, message: Message):
         await message.reply_text(f"❌ An error occurred: {e}")
 
 
-@Bot.on_message(filters.command("get_caption") & filters.private & is_admin)
+@Client.on_message(filters.command("get_caption") & filters.private & is_admin)
 async def get_caption_command(client: Client, message: Message):
     try:
         caption = await db.get_custom_caption()
@@ -2511,11 +2519,11 @@ async def get_caption_command(client: Client, message: Message):
 async def store_videos_dynamic(app: Client):
     all_videos = []
     try:
-        last_msgs = await try_until_get(app.get_history(CHANNEL_ID, limit=1))
+        last_msgs = [msg async for msg in app.get_chat_history(CHANNEL_ID, limit=1)]
         if not last_msgs:
             logging.info("No messages found in channel when storing videos (dynamic).")
             return
-        last_id = last_msgs[0].message_id
+        last_id = last_msgs[0].id
     except Exception as e:
         logging.error(f"Error fetching channel last message id: {e}")
         return
@@ -2549,11 +2557,11 @@ async def store_photos_dynamic(app: Client):
     batch_size = 100
     all_photos = []
     try:
-        last_msgs = await try_until_get(app.get_history(CHANNEL_ID, limit=1))
+        last_msgs = [msg async for msg in app.get_chat_history(CHANNEL_ID, limit=1)]
         if not last_msgs:
             logging.info("No messages found in channel when storing photos (dynamic).")
             return
-        last_id = last_msgs[0].message_id
+        last_id = last_msgs[0].id
     except Exception as e:
         logging.error(f"Error fetching channel last message id: {e}")
         return
