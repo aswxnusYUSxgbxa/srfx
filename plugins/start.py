@@ -2511,11 +2511,11 @@ async def get_caption_command(client: Client, message: Message):
 async def store_videos_dynamic(app: Client):
     all_videos = []
     try:
-        last_msgs = await try_until_get(app.get_history(CHANNEL_ID, limit=1))
+        last_msgs = [msg async for msg in app.get_chat_history(CHANNEL_ID, limit=1)]
         if not last_msgs:
             logging.info("No messages found in channel when storing videos (dynamic).")
             return
-        last_id = last_msgs[0].message_id
+        last_id = last_msgs[0].id
     except Exception as e:
         logging.error(f"Error fetching channel last message id: {e}")
         return
@@ -2549,11 +2549,11 @@ async def store_photos_dynamic(app: Client):
     batch_size = 100
     all_photos = []
     try:
-        last_msgs = await try_until_get(app.get_history(CHANNEL_ID, limit=1))
+        last_msgs = [msg async for msg in app.get_chat_history(CHANNEL_ID, limit=1)]
         if not last_msgs:
             logging.info("No messages found in channel when storing photos (dynamic).")
             return
-        last_id = last_msgs[0].message_id
+        last_id = last_msgs[0].id
     except Exception as e:
         logging.error(f"Error fetching channel last message id: {e}")
         return
