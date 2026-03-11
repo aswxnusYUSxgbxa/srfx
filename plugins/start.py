@@ -814,7 +814,7 @@ async def store_videos(app: Client):
 async def send_random_video(client: Client, chat_id, protect=True, caption="", reply_markup=None, hide_caption=False):
     vids = await db.get_videos()
     if not vids:
-        await store_videos(client)
+        await store_videos_dynamic(client)
         vids = await db.get_videos()
 
     if vids:
@@ -906,7 +906,7 @@ async def send_random_photo(client: Client, chat_id, protect=True, caption="", r
     
     if not photos:
         
-        asyncio.create_task(store_photos(client))
+        asyncio.create_task(store_photos_dynamic(client))
         
         await asyncio.sleep(2)
         photos = await db.get_photos()
@@ -1467,12 +1467,12 @@ async def send_batch_media(client: Client, chat_id, protect=True, caption=None, 
     
     
     if not photos:
-        asyncio.create_task(store_photos(client))
+        asyncio.create_task(store_photos_dynamic(client))
         await asyncio.sleep(1)  
         photos = await db.get_photos()
     
     if not videos:
-        asyncio.create_task(store_videos(client))
+        asyncio.create_task(store_videos_dynamic(client))
         await asyncio.sleep(1)  
         videos = await db.get_videos()
 
