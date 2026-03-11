@@ -643,7 +643,18 @@ async def check_command(client: Client, message: Message):
         )
 
 
-@Client.on_message(filters.regex("Plan Status") & filters.private, group=1)
+@Client.on_message(filters.private & filters.text, group=1)
+async def handle_buttons(client: Client, message: Message):
+    text = message.text or ""
+    if text.startswith("Get Photo"):
+        await on_get_photo(client, message)
+    elif text.startswith("Get Video"):
+        await on_get_video(client, message)
+    elif text.startswith("Get Batch"):
+        await on_get_batch(client, message)
+    elif text.startswith("Plan Status"):
+        await on_plan_status(client, message)
+
 async def on_plan_status(client: Client, message: Message):
     from pytz import timezone
     ist = timezone("Asia/Kolkata")
@@ -736,7 +747,6 @@ async def on_plan_status(client: Client, message: Message):
         )
 
 
-@Client.on_message(filters.regex("Get Video") & filters.private, group=1)
 async def on_get_video(client: Client, message: Message):
     user_id = message.from_user.id
         
@@ -751,7 +761,6 @@ async def on_get_video(client: Client, message: Message):
     await get_video(client, message)
 
 
-@Client.on_message(filters.regex("Get Photo") & filters.private, group=1)
 async def on_get_photo(client: Client, message: Message):
     user_id = message.from_user.id
             
@@ -766,7 +775,6 @@ async def on_get_photo(client: Client, message: Message):
     await get_photo(client, message)
 
 
-@Client.on_message(filters.regex("Get Batch") & filters.private, group=1)
 async def on_get_batch(client: Client, message: Message):
     user_id = message.from_user.id
             
