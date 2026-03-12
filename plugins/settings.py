@@ -45,7 +45,7 @@ async def get_settings_markup(client):
     ])
     return msg, reply_markup
 
-@Client.on_message(filters.regex("^Settings ⚙️$"))
+@Client.on_message(filters.regex("^Settings ⚙️$") & filters.private)
 async def settings_message(client, message: Message):
     msg, reply_markup = await get_settings_markup(client)
     await message.reply_text(msg, reply_markup=reply_markup)

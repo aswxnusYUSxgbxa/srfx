@@ -643,7 +643,7 @@ async def check_command(client: Client, message: Message):
         )
 
 
-@Bot.on_message(filters.regex("Plan Status 🔖"))
+@Bot.on_message(filters.regex("^Plan Status 🔖$") & filters.private)
 async def on_plan_status(client: Client, message: Message):
     from pytz import timezone
     ist = timezone("Asia/Kolkata")
@@ -736,7 +736,7 @@ async def on_plan_status(client: Client, message: Message):
         )
 
 
-@Bot.on_message(filters.regex("Get Video 🍒"))
+@Bot.on_message(filters.regex("^Get Video 🍒$") & filters.private)
 async def on_get_video(client: Client, message: Message):
     user_id = message.from_user.id
 
@@ -751,7 +751,7 @@ async def on_get_video(client: Client, message: Message):
     await get_video(client, message)
 
 
-@Bot.on_message(filters.regex("Get Photo 📸"))
+@Bot.on_message(filters.regex("^Get Photo 📸$") & filters.private)
 async def on_get_photo(client: Client, message: Message):
     user_id = message.from_user.id
 
@@ -766,7 +766,7 @@ async def on_get_photo(client: Client, message: Message):
     await get_photo(client, message)
 
 
-@Bot.on_message(filters.regex("Get Batch 📦"))
+@Bot.on_message(filters.regex("^Get Batch 📦$") & filters.private)
 async def on_get_batch(client: Client, message: Message):
     user_id = message.from_user.id
 
