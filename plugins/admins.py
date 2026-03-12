@@ -141,7 +141,7 @@ async def add_new_admins(client: Client, query: CallbackQuery):
     await query.answer()
     if not query.from_user.id in client.admins:
         return await client.send_message(query.from_user.id, client.reply_text)
-    ids_msg = await client.ask(query.from_user.id, "Send user ids seperated by a space in the next 60 seconds!\nEg: `838278682 83622928 82789928`", filters=filters.text, timeout=60)
+    ids_msg = await client.ask(chat_id=query.from_user.id, text="Send user ids seperated by a space in the next 60 seconds!\nEg: `838278682 83622928 82789928`", filters=filters.text, timeout=60)
     ids = ids_msg.text.split()
     
     try:
@@ -161,7 +161,7 @@ async def remove_admins(client: Client, query: CallbackQuery):
     await query.answer()
     if not query.from_user.id in client.admins:
         return await client.send_message(query.from_user.id, client.reply_text)
-    ids_msg = await client.ask(query.from_user.id, "Send user ids seperated by a space in the next 60 seconds!\nEg: `838278682 83622928 82789928`", filters=filters.text, timeout=60)
+    ids_msg = await client.ask(chat_id=query.from_user.id, text="Send user ids seperated by a space in the next 60 seconds!\nEg: `838278682 83622928 82789928`", filters=filters.text, timeout=60)
     ids = ids_msg.text.split()
     
     try:

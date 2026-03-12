@@ -77,3 +77,12 @@ Bot Starting without DB Channel access. Please forward a message to the bot to c
 [27-Feb-26 06:01:49 - INFO] - __main__ - Bot is now running. Thanks to @rohithinte thandha
 [27-Feb-26 06:05:38 - INFO] - root - [DEBUG] Received message in Chat: None (ID: 1137799257, Type: ChatType.PRIVATE)
 [27-Feb-26 06:05:38 - INFO] - root - Received /start command from user ID: 1137799257
+[12-Mar-26 14:41:09 - INFO] - __main__ - Bot Running..! Made by @rohithinte thandha
+[12-Mar-26 14:41:09 - INFO] - __main__ - Bot Username: @whapiybbot
+[12-Mar-26 14:41:09 - INFO] - __main__ - Bot is now running. Thanks to @rohithinte thandha
+[12-Mar-26 15:05:40 - INFO] - __main__ - Bot Running..! Made by @rohithinte thandha
+[12-Mar-26 15:05:40 - INFO] - __main__ - Bot Username: @whapiybbot
+[12-Mar-26 15:05:40 - INFO] - __main__ - Bot is now running. Thanks to @rohithinte thandha
+[12-Mar-26 15:17:32 - INFO] - __main__ - Bot Running..! Made by @rohithinte thandha
+[12-Mar-26 15:17:32 - INFO] - __main__ - Bot Username: @whapiybbot
+[12-Mar-26 15:17:32 - INFO] - __main__ - Bot is now running. Thanks to @rohithinte thandha

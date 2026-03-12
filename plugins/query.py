@@ -664,7 +664,7 @@ async def cb_handler(client: Bot, query: CallbackQuery):
             buttons.insert(0, ['CANCEL'])
             buttons.append(['DELETE ALL CHANNELS USER'])
 
-            user_reply = await client.ask(query.from_user.id, text=CLEAR_USERS_TXT, reply_markup=ReplyKeyboardMarkup(buttons, one_time_keyboard=True, resize_keyboard=True))
+            user_reply = await client.ask(chat_id=query.from_user.id, text=CLEAR_USERS_TXT, reply_markup=ReplyKeyboardMarkup(buttons, one_time_keyboard=True, resize_keyboard=True))
 
             if user_reply.text == 'CANCEL':
                 return await user_reply.reply("<b><i>🆑 Cᴀɴᴄᴇʟʟᴇᴅ...</i></b>", reply_markup=ReplyKeyboardRemove())
@@ -706,7 +706,7 @@ async def cb_handler(client: Bot, query: CallbackQuery):
             buttons.insert(0, ['CANCEL'])
             buttons.append(['DELETE ALL CHANNEL IDS'])
 
-            user_reply = await client.ask(query.from_user.id, text=CLEAR_CHNLS_TXT, reply_markup=ReplyKeyboardMarkup(buttons, one_time_keyboard=True, resize_keyboard=True))
+            user_reply = await client.ask(chat_id=query.from_user.id, text=CLEAR_CHNLS_TXT, reply_markup=ReplyKeyboardMarkup(buttons, one_time_keyboard=True, resize_keyboard=True))
 
             if user_reply.text == 'CANCEL':
                 return await user_reply.reply("<b><i>🆑 Cᴀɴᴄᴇʟʟᴇᴅ...</i></b>", reply_markup=ReplyKeyboardRemove())
@@ -770,7 +770,7 @@ async def cb_handler(client: Bot, query: CallbackQuery):
             buttons.insert(0, ['CANCEL'])
             buttons.append(['DELETE ALL REQUEST LINKS'])
 
-            user_reply = await client.ask(query.from_user.id, text=CLEAR_LINKS_TXT, reply_markup=ReplyKeyboardMarkup(buttons, one_time_keyboard=True, resize_keyboard=True))
+            user_reply = await client.ask(chat_id=query.from_user.id, text=CLEAR_LINKS_TXT, reply_markup=ReplyKeyboardMarkup(buttons, one_time_keyboard=True, resize_keyboard=True))
 
             if user_reply.text == 'CANCEL':
                 return await user_reply.reply("<b><i>🆑 Cᴀɴᴄᴇʟʟᴇᴅ...</i></b>", reply_markup=ReplyKeyboardRemove())
