@@ -12,7 +12,7 @@ async def store_db_channel_media(client, message):
     
     try:
         if message.photo:
-            photo = message.photo[-1]
+            photo = message.photo
             file_id = photo.file_id
             file_unique_id = photo.file_unique_id
             exists = await db.photo_exists(file_id) or await db.photo_exists(file_unique_id)
@@ -21,7 +21,7 @@ async def store_db_channel_media(client, message):
                     "file_id": file_id,
                     "file_unique_id": file_unique_id,
                     "caption": message.caption or "",
-                    "message_id": message.message_id,
+                    "message_id": message.id,
                     "chat_id": message.chat.id,
                     "added_at": datetime.utcnow()
                 }])
@@ -39,7 +39,7 @@ async def store_db_channel_media(client, message):
                     "duration": vid.duration,
                     "mime_type": vid.mime_type,
                     "caption": message.caption or "",
-                    "message_id": message.message_id,
+                    "message_id": message.id,
                     "chat_id": message.chat.id,
                     "added_at": datetime.utcnow()
                 }])
@@ -56,7 +56,7 @@ async def store_db_channel_media(client, message):
                     "file_unique_id": file_unique_id,
                     "mime_type": getattr(doc, 'mime_type', None),
                     "caption": message.caption or "",
-                    "message_id": message.message_id,
+                    "message_id": message.id,
                     "chat_id": message.chat.id,
                     "added_at": datetime.utcnow()
                 }])
